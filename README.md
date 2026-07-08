@@ -95,13 +95,25 @@ The API service layer in `src/lib/api/` connects to the NestJS backend. All stor
 
 ## Deployment (Netlify)
 
-```bash
-npm run build
-```
+### Standalone repo (`Mfresh-Ecom-Frontend`)
+
+The app lives at the repository root. Use `Frontend/netlify.toml` **without** a `base` path.
 
 Netlify settings:
+- **Base directory:** *(leave empty)*
 - **Build command:** `npm run build`
-- **Publish directory:** `.next` (use Next.js Netlify plugin) or configure `@netlify/plugin-nextjs`
+- **Publish directory:** `.next`
+- **Plugin:** `@netlify/plugin-nextjs`
+
+Environment variables (Site configuration → Environment variables):
+- `NEXT_PUBLIC_API_URL=https://mfresh-ecom-backend.onrender.com/api/v1`
+- `NEXT_PUBLIC_SITE_URL=https://your-storefront.netlify.app`
+
+Also add the storefront URL to the backend `CORS_ORIGIN` on Render.
+
+### Monorepo (`MFresh-Web`)
+
+Use the repo-root `netlify.toml` (sets `base = "Frontend"`) or set **Base directory** to `Frontend` in the Netlify UI.
 
 ## Scripts
 
