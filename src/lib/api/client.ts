@@ -55,9 +55,15 @@ export function qs(params: ListParams = {}): string {
 }
 
 export async function api<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  // Server-side fetches without a timeout can hang Netlify static generation
+  const signal =
+    options?.signal ??
+    (typeof window === "undefined" ? AbortSignal.timeout(8_000) : undefined);
+
   const res = await fetch(`${API_URL}${endpoint}`, {
     headers: { "Content-Type": "application/json", ...options?.headers },
     ...options,
+    signal,
   });
 
   if (!res.ok) {

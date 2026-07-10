@@ -89,16 +89,35 @@ export async function getStorefrontTheme(): Promise<ThemeResponse> {
   }
 }
 
+const FALLBACK_THEME: ThemeResponse = {
+  theme: { ...DEFAULT_THEME },
+  logoUrl: null,
+  fromApi: false,
+};
+
+/** Avoid hanging Netlify/CI static generation when the API is unreachable */
+function isProductionBuild(): boolean {
+  return process.env.NEXT_PHASE === "phase-production-build";
+}
+
 export async function getStorefrontThemeServer(): Promise<ThemeResponse> {
+  // Root layout runs for every page during `next build`. A hanging fetch
+  // makes static generation hit the 60s timeout (Netlify failure).
+  // Theme is loaded on the client via ThemeProvider instead.
+  if (isProductionBuild()) {
+    return FALLBACK_THEME;
+  }
+
   const API_URL =
     process.env.INTERNAL_API_URL ??
     process.env.NEXT_PUBLIC_API_URL ??
     "http://localhost:4005/api/v1";
+
   try {
     const res = await fetch(`${API_URL}/public/settings/theme`, {
-      next: { revalidate: 30 },
       headers: { Accept: "application/json" },
-      cache: "no-store",
+      next: { revalidate: 30 },
+      signal: AbortSignal.timeout(5_000),
     });
     if (!res.ok) throw new Error(`theme ${res.status}`);
     const data = (await res.json()) as {
@@ -107,7 +126,7 @@ export async function getStorefrontThemeServer(): Promise<ThemeResponse> {
     };
     return normalizeThemePayload(data, true);
   } catch {
-    return { theme: { ...DEFAULT_THEME }, logoUrl: null, fromApi: false };
+    return FALLBACK_THEME;
   }
 }
 
