@@ -4,6 +4,7 @@ import { MainLayout } from "@/components/layout/main-layout";
 import { QueryProvider } from "@/providers/query-provider";
 import { ToastProvider } from "@/providers/toast-provider";
 import { CurrencyRatesProvider } from "@/providers/currency-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/constants";
 import "./globals.css";
 
@@ -32,7 +33,9 @@ export default function RootLayout({
         <QueryProvider>
           <ToastProvider />
           <CurrencyRatesProvider>
-            <MainLayout>{children}</MainLayout>
+            <ThemeProvider>
+              <MainLayout>{children}</MainLayout>
+            </ThemeProvider>
           </CurrencyRatesProvider>
         </QueryProvider>
       </body>

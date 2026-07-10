@@ -13,6 +13,7 @@ export interface SubCategory {
   name: string;
   slug: string;
   categoryId: string;
+  image?: string;
 }
 
 export interface Supplier {
@@ -35,6 +36,9 @@ export interface Product {
   description: string;
   image: string;
   images: string[];
+  mainImage?: string;
+  subImages?: string[];
+  displayImage?: string;
   price: number;
   currency: string;
   moq: number;
@@ -42,13 +46,17 @@ export interface Product {
   country: string;
   categoryId: string;
   categoryName: string;
+  categorySlug?: string;
   subCategoryId?: string;
   subCategoryName?: string;
+  subCategorySlug?: string;
   supplierId: string;
   supplierName: string;
   featured?: boolean;
   popular?: boolean;
   isNew?: boolean;
+  isActive?: boolean;
+  soldOut?: boolean;
   specifications?: Record<string, string>;
 }
 

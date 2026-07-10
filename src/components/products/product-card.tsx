@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MapPin, Package } from "lucide-react";
+import { Heart, Package } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { PriceDisplay } from "@/components/shared/price-display";
+import { CountryFlagIcon } from "@/components/shared/country-flag-icon";
 import { useFavoritesStore } from "@/store/favorites-store";
 import type { Product } from "@/types";
 import { cn } from "@/lib/utils";
@@ -35,12 +36,19 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
               src={product.image}
               alt={product.name}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className={cn(
+                "object-cover transition-transform duration-500 group-hover:scale-105",
+                (product.soldOut || product.isActive === false) && "opacity-60",
+              )}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             />
             <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
               {product.isNew && <Badge variant="new">New</Badge>}
               {product.featured && <Badge variant="secondary">Featured</Badge>}
+              {product.soldOut && <Badge variant="secondary">Sold Out</Badge>}
+              {product.isActive === false && (
+                <Badge variant="outline">Unavailable</Badge>
+              )}
             </div>
             <button
               type="button"
@@ -61,20 +69,28 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
           </div>
 
           <div className="space-y-2.5 p-3 sm:space-y-3 sm:p-4">
-            <div className="flex items-center gap-1.5 text-[10px] text-muted sm:text-xs">
-              <MapPin className="h-3 w-3 shrink-0" />
-              <span className="truncate">{product.country}</span>
-              <span className="text-gray-300">•</span>
-              <span className="truncate">{product.categoryName}</span>
-            </div>
+            {(product.categoryName || product.subCategoryName) && (
+              <p className="text-[10px] font-medium text-muted sm:text-xs">
+                {product.categoryName}
+                {product.subCategoryName && (
+                  <>
+                    <span className="mx-1 text-gray-300">›</span>
+                    {product.subCategoryName}
+                  </>
+                )}
+              </p>
+            )}
+
+            {product.country ? (
+              <div className="flex items-center gap-1.5 text-[10px] text-muted sm:text-xs">
+                <CountryFlagIcon country={product.country} size={16} />
+                <span className="truncate">{product.country}</span>
+              </div>
+            ) : null}
 
             <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-dark-gray transition-colors group-hover:text-primary sm:text-sm md:text-base">
               {product.name}
             </h3>
-
-            <p className="truncate text-[10px] text-muted sm:text-xs">
-              by {product.supplierName}
-            </p>
 
             <div className="flex items-end justify-between gap-2 pt-0.5 sm:pt-1">
               <div className="min-w-0">

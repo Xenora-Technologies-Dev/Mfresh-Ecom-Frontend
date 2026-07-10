@@ -16,7 +16,7 @@ const GREETING_MESSAGES = [
   "Need help sourcing wholesale seafood? Ask me!",
   "Looking for verified food suppliers? I'm here!",
   "Confused about bulk pricing? Let's chat!",
-  "Welcome to MFresh — tap me to talk!",
+  "Welcome to M Fresh — tap me to talk!",
 ];
 
 function createId() {
@@ -80,7 +80,7 @@ export function MFreshyBot() {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
+    <div className="fixed bottom-[5.5rem] right-5 z-[110] flex flex-col items-end gap-3 sm:bottom-[6.5rem] sm:right-6">
       <AnimatePresence>
         {showBubble && !isOpen && (
           <motion.div

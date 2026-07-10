@@ -17,7 +17,7 @@ export function ProductFavoriteButton({ productId }: { productId: string }) {
       className={cn(favorited && "border-red-200 text-red-500")}
     >
       <Heart className={cn("h-4 w-4", favorited && "fill-current")} />
-      {favorited ? "Saved" : "Save"}
+      {favorited ? "Wishlisted" : "Wishlist"}
     </Button>
   );
 }

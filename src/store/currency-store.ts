@@ -24,6 +24,15 @@ export const useCurrencyStore = create<CurrencyState>()(
           rates: { ...state.rates, ...partial },
         })),
     }),
-    { name: "mfresh-currency" },
+    {
+      name: "mfresh-currency",
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        const valid = ["USD", "AED", "SGD"] as const;
+        if (!valid.includes(state.currency)) {
+          state.currency = BASE_CURRENCY;
+        }
+      },
+    },
   ),
 );

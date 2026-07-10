@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
+import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { getProductsPaginated } from "@/lib/api/products";
 import { getCategories } from "@/lib/api/categories";
 import { ProductCard } from "@/components/products/product-card";
 import { ProductFiltersPanel } from "@/components/products/product-filters";
-import { PageHero } from "@/components/shared/page-hero";
+import { CategoryBreadcrumbs, type BreadcrumbItem } from "@/components/shared/category-breadcrumbs";
 import { SearchBar } from "@/components/layout/search-bar";
 import { ProductGridSkeleton } from "@/components/shared/skeletons";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import type { ProductFilters } from "@/types";
 export default function ProductsPageContent() {
   const searchParams = useSearchParams();
   const categorySlug = searchParams.get("category");
+  const subcategorySlug = searchParams.get("subcategory");
 
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -38,18 +39,29 @@ export default function ProductsPageContent() {
     [categories, categorySlug],
   );
 
+  const activeSubcategory = useMemo(
+    () =>
+      activeCategory?.subcategories.find((s) => s.slug === subcategorySlug),
+    [activeCategory, subcategorySlug],
+  );
+
   useEffect(() => {
     if (activeCategory) {
-      setFilters((prev) => ({ ...prev, category: activeCategory.id }));
+      setFilters((prev) => ({
+        ...prev,
+        category: activeCategory.id,
+        subCategory: activeSubcategory?.id,
+      }));
     }
-  }, [activeCategory]);
+  }, [activeCategory, activeSubcategory]);
 
   const resolvedFilters = useMemo(
     () => ({
       ...filters,
       category: activeCategory?.id ?? filters.category,
+      subCategory: activeSubcategory?.id ?? filters.subCategory,
     }),
-    [filters, activeCategory],
+    [filters, activeCategory, activeSubcategory],
   );
 
   const { data, isLoading, isError, error } = useQuery({
@@ -70,130 +82,190 @@ export default function ProductsPageContent() {
   const meta = data?.meta;
 
   const handleReset = () => {
-    setFilters(activeCategory ? { category: activeCategory.id } : {});
+    setFilters(
+      activeCategory
+        ? {
+            category: activeCategory.id,
+            subCategory: activeSubcategory?.id,
+          }
+        : {},
+    );
     setPage(1);
   };
 
-  return (
-    <>
-      <PageHero
-        title={activeCategory ? activeCategory.name : "Products"}
-        subtitle={
-          activeCategory?.description ||
-          "Browse premium wholesale food ingredients from verified global suppliers"
-        }
-      >
-        <div className="mx-auto max-w-xl space-y-3">
-          <SearchBar
-            defaultValue={filters.search ?? ""}
-            onSearch={(q) => {
-              setFilters((prev) => ({ ...prev, search: q || undefined }));
-              setPage(1);
-            }}
-          />
-          {activeCategory && (
-            <Link
-              href="/products"
-              className="inline-flex items-center gap-1.5 text-sm text-white/80 hover:text-white"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              View all products
-            </Link>
-          )}
-        </div>
-      </PageHero>
+  const breadcrumbItems = useMemo((): BreadcrumbItem[] => {
+    const items: BreadcrumbItem[] = [{ label: "Home", href: "/" }];
+    if (activeCategory) {
+      items.push({
+        label: activeCategory.name,
+        href: `/categories/${activeCategory.slug}`,
+      });
+    }
+    if (activeSubcategory) {
+      items.push({
+        label: activeSubcategory.name,
+        href: activeCategory
+          ? `/categories/${activeCategory.slug}?sub=${activeSubcategory.slug}`
+          : undefined,
+      });
+    } else if (!activeCategory) {
+      items.push({ label: "Products", href: "/products" });
+    }
+    return items;
+  }, [activeCategory, activeSubcategory]);
 
-      <section className="py-8 sm:py-14">
-        <div className="container-main">
-          <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
-            <p className="text-sm text-muted">
-              {isLoading
-                ? "Loading..."
-                : `${meta?.total ?? products.length} product${(meta?.total ?? products.length) !== 1 ? "s" : ""}`}
+  const pageTitle = activeSubcategory
+    ? `${activeCategory?.name} — ${activeSubcategory.name}`
+    : activeCategory
+      ? activeCategory.name
+      : "Products";
+
+  return (
+    <section className="py-8 sm:py-12">
+      <div className="container-main">
+        <CategoryBreadcrumbs items={breadcrumbItems} className="mb-4" />
+
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-dark-gray sm:text-3xl">
+              {pageTitle}
+            </h1>
+            <p className="mt-1 text-sm text-muted">
+              {activeCategory?.description ||
+                "Browse premium wholesale food ingredients from verified global suppliers"}
             </p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => setFiltersOpen((open) => !open)}
-              aria-expanded={filtersOpen}
-            >
-              <SlidersHorizontal className="h-4 w-4" />
-              Filters
-            </Button>
           </div>
-          <div className="grid gap-6 lg:grid-cols-[280px_1fr] lg:gap-8">
-            <aside
+          <div className="w-full max-w-md">
+            <SearchBar
+              defaultValue={filters.search ?? ""}
+              onSearch={(q) => {
+                setFilters((prev) => ({ ...prev, search: q || undefined }));
+                setPage(1);
+              }}
+            />
+          </div>
+        </div>
+
+        {activeCategory && activeCategory.subcategories.length > 0 && (
+          <div className="mb-6 flex flex-wrap gap-2">
+            <Link
+              href={`/products?category=${encodeURIComponent(activeCategory.slug)}`}
               className={cn(
-                "lg:sticky lg:top-28 lg:block lg:self-start",
-                filtersOpen ? "block" : "hidden",
+                "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors sm:text-sm",
+                !activeSubcategory
+                  ? "border-primary bg-primary text-white"
+                  : "border-border bg-white text-dark-gray hover:border-primary/40",
               )}
             >
-              <ProductFiltersPanel
-                filters={resolvedFilters}
-                onChange={(f) => {
-                  setFilters(f);
-                  setPage(1);
-                }}
-                onReset={handleReset}
-              />
-            </aside>
-            <div>
-              <p className="mb-6 hidden text-sm text-muted lg:block">
-                {isLoading
-                  ? "Loading products..."
-                  : `${meta?.total ?? products.length} product${(meta?.total ?? products.length) !== 1 ? "s" : ""} found`}
-                {activeCategory ? ` in ${activeCategory.name}` : ""}
-              </p>
-              {isLoading ? (
-                <ProductGridSkeleton count={6} />
-              ) : products.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-gray-200 py-16 text-center">
-                  <p className="text-muted">
-                    {activeCategory
+              All {activeCategory.name}
+            </Link>
+            {activeCategory.subcategories.map((sub) => (
+              <Link
+                key={sub.id}
+                href={`/products?category=${encodeURIComponent(activeCategory.slug)}&subcategory=${encodeURIComponent(sub.slug)}`}
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors sm:text-sm",
+                  activeSubcategory?.id === sub.id
+                    ? "border-primary bg-primary text-white"
+                    : "border-border bg-white text-dark-gray hover:border-primary/40",
+                )}
+              >
+                {sub.name}
+              </Link>
+            ))}
+          </div>
+        )}
+
+        <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
+          <p className="text-sm text-muted">
+            {isLoading
+              ? "Loading..."
+              : `${meta?.total ?? products.length} product${(meta?.total ?? products.length) !== 1 ? "s" : ""}`}
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => setFiltersOpen((open) => !open)}
+            aria-expanded={filtersOpen}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            Filters
+          </Button>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[280px_1fr] lg:gap-8">
+          <aside
+            className={cn(
+              "lg:sticky lg:top-28 lg:block lg:self-start",
+              filtersOpen ? "block" : "hidden",
+            )}
+          >
+            <ProductFiltersPanel
+              filters={resolvedFilters}
+              onChange={(f) => {
+                setFilters(f);
+                setPage(1);
+              }}
+              onReset={handleReset}
+            />
+          </aside>
+          <div>
+            <p className="mb-6 hidden text-sm text-muted lg:block">
+              {isLoading
+                ? "Loading products..."
+                : `${meta?.total ?? products.length} product${(meta?.total ?? products.length) !== 1 ? "s" : ""} found`}
+            </p>
+            {isLoading ? (
+              <ProductGridSkeleton count={6} />
+            ) : products.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-gray-200 py-16 text-center">
+                <p className="text-muted">
+                  {activeSubcategory
+                    ? `No products in ${activeSubcategory.name} yet.`
+                    : activeCategory
                       ? `No products in ${activeCategory.name} yet.`
                       : "No products match your filters."}
-                  </p>
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3">
+                  {products.map((product, i) => (
+                    <ProductCard key={product.id} product={product} index={i} />
+                  ))}
                 </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3">
-                    {products.map((product, i) => (
-                      <ProductCard key={product.id} product={product} index={i} />
-                    ))}
-                  </div>
-                  {meta && meta.totalPages > 1 && (
-                    <div className="mt-8 flex items-center justify-between">
-                      <p className="text-sm text-muted">
-                        Page {meta.page} of {meta.totalPages}
-                      </p>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={page <= 1}
-                          onClick={() => setPage((p) => p - 1)}
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={page >= meta.totalPages}
-                          onClick={() => setPage((p) => p + 1)}
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      </div>
+                {meta && meta.totalPages > 1 && (
+                  <div className="mt-8 flex items-center justify-between">
+                    <p className="text-sm text-muted">
+                      Page {meta.page} of {meta.totalPages}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={page <= 1}
+                        onClick={() => setPage((p) => p - 1)}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={page >= meta.totalPages}
+                        onClick={() => setPage((p) => p + 1)}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
                     </div>
-                  )}
-                </>
-              )}
-            </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

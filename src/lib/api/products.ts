@@ -88,3 +88,12 @@ export async function getUniqueCountries(): Promise<string[]> {
   const meta = await api<{ countries: string[] }>("/products/meta");
   return meta.countries;
 }
+
+export async function getProductsByIds(ids: string[]): Promise<Product[]> {
+  if (!ids.length) return [];
+  const res = await api<PaginatedResponse<Record<string, unknown>>>(
+    `/products${qs({ ids: ids.join(","), limit: Math.max(ids.length, 1) })}`,
+  );
+  const byId = new Map(res.data.map((p) => [p.id as string, mapProduct(p)]));
+  return ids.map((id) => byId.get(id)).filter((p): p is Product => !!p);
+}

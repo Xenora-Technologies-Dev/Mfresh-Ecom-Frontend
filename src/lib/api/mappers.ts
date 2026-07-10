@@ -13,11 +13,17 @@ import type {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export function mapSubCategory(raw: any): SubCategory {
+  const imagePath = raw.imageUrl ?? raw.image;
   return {
     id: raw.id,
     name: raw.name,
     slug: raw.slug,
     categoryId: raw.categoryId,
+    image: imagePath
+      ? String(imagePath).startsWith("http")
+        ? String(imagePath)
+        : storageUrl(imagePath)
+      : undefined,
   };
 }
 
@@ -50,20 +56,48 @@ export function mapSupplier(raw: any): Supplier {
 }
 
 export function mapProduct(raw: any): Product {
-  const imageUrls =
-    raw.imageUrls?.map((i: any) => i.display ?? i.large ?? i.original) ?? [];
-  const primary =
+  const rawImageList = raw.imageUrls ?? [];
+  const display = rawImageList.find((i: any) => i.type === "DISPLAY");
+  const main = rawImageList.find((i: any) => i.type === "MAIN");
+  const subs = rawImageList.filter((i: any) => i.type === "SUB");
+
+  const displayUrl = display?.display ?? display?.large ?? raw.displayImageUrl;
+  const mainUrl =
+    main?.large ?? main?.display ?? raw.mainImageUrl ?? displayUrl;
+  const subUrls = (
+    subs.length
+      ? subs.map((i: any) => i.medium ?? i.display ?? i.large)
+      : (raw.subImageUrls as string[] | undefined) ?? []
+  ).filter(Boolean);
+
+  const cardPrimary =
+    raw.displayImageUrl ??
     raw.imageUrl ??
-    imageUrls[0] ??
+    displayUrl ??
+    mainUrl ??
     null;
+
+  const galleryImages = [
+    mainUrl,
+    ...subUrls.filter((u: string) => u !== mainUrl),
+  ]
+    .filter(Boolean)
+    .map((u: string) => storageUrl(u));
 
   return {
     id: raw.id,
     name: raw.name,
     slug: raw.slug,
     description: raw.description ?? "",
-    image: storageUrl(primary),
-    images: imageUrls.map((u: string) => storageUrl(u)),
+    image: storageUrl(cardPrimary),
+    displayImage: displayUrl ? storageUrl(displayUrl) : storageUrl(cardPrimary),
+    mainImage: mainUrl ? storageUrl(mainUrl) : undefined,
+    subImages: subUrls.map((u: string) => storageUrl(u)),
+    images: galleryImages.length
+      ? galleryImages
+      : cardPrimary
+        ? [storageUrl(cardPrimary)]
+        : [],
     price: raw.price,
     currency: raw.currency ?? "USD",
     moq: raw.moq,
@@ -71,13 +105,17 @@ export function mapProduct(raw: any): Product {
     country: raw.country ?? "",
     categoryId: raw.categoryId,
     categoryName: raw.category?.name ?? raw.categoryName ?? "",
+    categorySlug: raw.category?.slug ?? raw.categorySlug ?? undefined,
     subCategoryId: raw.subCategoryId ?? undefined,
     subCategoryName: raw.subCategory?.name ?? raw.subCategoryName ?? undefined,
+    subCategorySlug: raw.subCategory?.slug ?? raw.subCategorySlug ?? undefined,
     supplierId: raw.supplierId,
     supplierName: raw.supplier?.name ?? raw.supplierName ?? "",
     featured: raw.featured,
     popular: raw.popular,
     isNew: raw.isNew,
+    isActive: raw.isActive !== false,
+    soldOut: Boolean(raw.soldOut),
     specifications: (raw.specifications as Record<string, string>) ?? undefined,
   };
 }

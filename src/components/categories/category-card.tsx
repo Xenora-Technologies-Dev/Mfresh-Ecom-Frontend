@@ -28,7 +28,7 @@ export function CategoryCard({
       transition={{ duration: 0.4, delay: index * 0.06 }}
       className={cn("group", className)}
     >
-      <Link href={`/products?category=${category.slug}`}>
+      <Link href={`/categories/${category.slug}`}>
         <div
           className={cn(
             "relative overflow-hidden rounded-xl border border-border bg-surface shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:border-primary-light/25 group-hover:shadow-md group-hover:shadow-primary/5",

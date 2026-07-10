@@ -45,34 +45,34 @@ export const CATEGORY_PILLARS = [
 
 export const HERO_SLIDES = [
   {
-    id: "hero-1",
-    title: "Global Wholesale Food Marketplace",
-    subtitle:
-      "Connect with verified suppliers across 150+ countries. Secure escrow payments and quality-inspected trade.",
+    id: "hero-seller",
+    title: "",
+    subtitle: "",
+    ctaText: "Sign Up as a Seller",
+    ctaLink: "/become-seller",
+    image:
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1920&q=80",
+    accent: "green",
+  },
+  {
+    id: "hero-buyer",
+    title: "",
+    subtitle: "",
+    ctaText: "Register as Buyer",
+    ctaLink: "/become-buyer",
+    image:
+      "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1920&q=80",
+    accent: "green",
+  },
+  {
+    id: "hero-products",
+    title: "",
+    subtitle: "",
     ctaText: "Browse Products",
     ctaLink: "/products",
     image:
-      "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1920&q=80",
-  },
-  {
-    id: "hero-2",
-    title: "Source Premium Seafood at Scale",
-    subtitle:
-      "Sustainably sourced fish, shellfish, and frozen seafood from trusted global fisheries.",
-    ctaText: "Explore Seafood",
-    ctaLink: "/categories?category=seafood",
-    image:
-      "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=1920&q=80",
-  },
-  {
-    id: "hero-3",
-    title: "Wholesale Meats & Fresh Produce",
-    subtitle:
-      "Halal-certified meats, dairy, and farm-fresh ingredients for hotels, restaurants, and retailers.",
-    ctaText: "View Categories",
-    ctaLink: "/categories",
-    image:
       "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=1920&q=80",
+    accent: "green",
   },
 ] as const;
 

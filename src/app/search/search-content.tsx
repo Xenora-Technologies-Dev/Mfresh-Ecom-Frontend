@@ -8,7 +8,6 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { globalSearch } from "@/lib/api/search";
 import { ProductCard } from "@/components/products/product-card";
 import { CategoryCard } from "@/components/categories/category-card";
-import { SupplierCard } from "@/components/suppliers/supplier-card";
 import { PageHero } from "@/components/shared/page-hero";
 import { SearchBar } from "@/components/layout/search-bar";
 
@@ -26,7 +25,7 @@ function SearchResults() {
   if (!debouncedQuery) {
     return (
       <div className="rounded-2xl border border-dashed border-gray-200 py-16 text-center">
-        <p className="text-muted">Enter a search term to find products, categories, and suppliers.</p>
+        <p className="text-muted">Enter a search term to find products and categories.</p>
       </div>
     );
   }
@@ -35,7 +34,11 @@ function SearchResults() {
     return <p className="text-center text-muted py-10">Searching...</p>;
   }
 
-  if (!data || data.total === 0) {
+  const productCount = data?.products.length ?? 0;
+  const categoryCount = data?.categories.length ?? 0;
+  const total = productCount + categoryCount;
+
+  if (!data || total === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-gray-200 py-16 text-center">
         <p className="text-muted">No results found for &ldquo;{debouncedQuery}&rdquo;</p>
@@ -75,19 +78,6 @@ function SearchResults() {
           </div>
         </div>
       )}
-
-      {data.suppliers.length > 0 && (
-        <div>
-          <h2 className="mb-6 text-xl font-bold text-dark-gray">
-            Suppliers ({data.suppliers.length})
-          </h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {data.suppliers.map((s, i) => (
-              <SupplierCard key={s.id} supplier={s} index={i} />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -98,7 +88,7 @@ export default function SearchPageContent() {
 
   return (
     <>
-      <PageHero title="Search" subtitle="Find products, categories, and suppliers">
+      <PageHero title="Search" subtitle="Find products and categories">
         <div className="mx-auto max-w-xl">
           <SearchBar defaultValue={query} />
         </div>

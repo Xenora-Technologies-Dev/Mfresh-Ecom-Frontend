@@ -5,6 +5,7 @@ interface FavoritesState {
   favorites: string[];
   toggleFavorite: (productId: string) => void;
   isFavorite: (productId: string) => boolean;
+  clearFavorites: () => void;
 }
 
 export const useFavoritesStore = create<FavoritesState>()(
@@ -18,6 +19,7 @@ export const useFavoritesStore = create<FavoritesState>()(
             : [...state.favorites, productId],
         })),
       isFavorite: (productId) => get().favorites.includes(productId),
+      clearFavorites: () => set({ favorites: [] }),
     }),
     { name: "mfresh-favorites" },
   ),

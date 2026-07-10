@@ -1,5 +1,6 @@
-export const SITE_NAME = "MFresh";
+export const SITE_NAME = "M Fresh";
 export const SITE_TAGLINE = "Global B2B Food Marketplace";
+export const MFRESH_WEBSITE = "https://www.mfresh.ae";
 export const SITE_DESCRIPTION =
   "Premium B2B food marketplace connecting buyers and verified suppliers across the Middle East, Asia-Pacific, and worldwide.";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3006";
@@ -15,32 +16,31 @@ export const STOREFRONT_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3006";
 
 export const COLORS = {
-  primary: "#2E3192",
-  primaryDark: "#1E2370",
-  primaryLight: "#4A4FB8",
-  primaryMuted: "#EEF0F8",
-  secondary: "#ED1C24",
-  secondaryDark: "#C4161D",
-  freshMint: "#F4F9F5",
+  primary: "#4DB87A",
+  primaryDark: "#3A9A64",
+  primaryLight: "#7DCE9E",
+  primaryMuted: "#E8F6EE",
+  secondary: "#FF9A56",
+  secondaryDark: "#E8863F",
+  freshMint: "#F4FAF6",
   white: "#FFFFFF",
-  lightGray: "#EDF5EE",
-  darkGray: "#1A1D4E",
+  lightGray: "#F5F8F6",
+  darkGray: "#2A3B30",
 } as const;
 
 export const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/categories", label: "Categories" },
+  { href: "/about", label: "About Us" },
   { href: "/products", label: "Products" },
-  { href: "/suppliers", label: "Suppliers" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: "/faqs", label: "FAQs" },
+  { href: "/become-buyer", label: "Buyer FAQ" },
 ] as const;
+
+export const DEFAULT_REGION = "UAE";
 
 export const FOOTER_LINKS = {
   marketplace: [
     { href: "/categories", label: "Categories" },
     { href: "/products", label: "Products" },
-    { href: "/suppliers", label: "Suppliers" },
     { href: "/search", label: "Search" },
   ],
   company: [

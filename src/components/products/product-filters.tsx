@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCategories } from "@/lib/api/categories";
 import { getPriceRange, getUniqueCountries } from "@/lib/api/products";
-import { getSuppliers } from "@/lib/api/suppliers";
+import { DEFAULT_COUNTRY_OPTIONS, mergeCountryLists } from "@/lib/countries";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -33,10 +33,6 @@ export function ProductFiltersPanel({
     queryKey: ["categories"],
     queryFn: getCategories,
   });
-  const { data: suppliers = [] } = useQuery({
-    queryKey: ["suppliers"],
-    queryFn: getSuppliers,
-  });
 
   const { data: meta } = useQuery({
     queryKey: ["products-meta"],
@@ -49,7 +45,10 @@ export function ProductFiltersPanel({
     },
   });
 
-  const countries = meta?.countries ?? [];
+  const countries = mergeCountryLists(
+    DEFAULT_COUNTRY_OPTIONS,
+    meta?.countries ?? [],
+  );
   const priceRange = meta?.priceRange ?? { min: 0, max: 0 };
   const { currency, rates } = useCurrencyStore();
 
@@ -135,28 +134,6 @@ export function ProductFiltersPanel({
             {countries.map((c) => (
               <SelectItem key={c} value={c}>
                 {c}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Supplier</Label>
-        <Select
-          value={filters.supplier ?? "all"}
-          onValueChange={(v) =>
-            onChange({ ...filters, supplier: v === "all" ? undefined : v })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="All suppliers" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All suppliers</SelectItem>
-            {suppliers.map((s) => (
-              <SelectItem key={s.id} value={s.id}>
-                {s.name}
               </SelectItem>
             ))}
           </SelectContent>
