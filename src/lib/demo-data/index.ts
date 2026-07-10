@@ -43,38 +43,8 @@ export const CATEGORY_PILLARS = [
   },
 ] as const;
 
-export const HERO_SLIDES = [
-  {
-    id: "hero-seller",
-    title: "",
-    subtitle: "",
-    ctaText: "Sign Up as a Seller",
-    ctaLink: "/become-seller",
-    image:
-      "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1920&q=80",
-    accent: "green",
-  },
-  {
-    id: "hero-buyer",
-    title: "",
-    subtitle: "",
-    ctaText: "Register as Buyer",
-    ctaLink: "/become-buyer",
-    image:
-      "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1920&q=80",
-    accent: "green",
-  },
-  {
-    id: "hero-products",
-    title: "",
-    subtitle: "",
-    ctaText: "Browse Products",
-    ctaLink: "/products",
-    image:
-      "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=1920&q=80",
-    accent: "green",
-  },
-] as const;
+/** Intentionally empty — never use demo hero images (avoids handshake flash) */
+export const HERO_SLIDES = [] as const;
 
 export const TRUST_FEATURES = [
   {

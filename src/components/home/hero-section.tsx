@@ -6,28 +6,19 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getHeroBanners } from "@/lib/api/banners";
-import { HERO_SLIDES } from "@/lib/demo-data";
-import type { Banner } from "@/types";
+import { useBoot } from "@/providers/boot-provider";
 import { cn } from "@/lib/utils";
 
-const FALLBACK_SLIDES: Banner[] = HERO_SLIDES.map((s) => ({
-  id: s.id,
-  title: s.title,
-  subtitle: s.subtitle,
-  ctaText: s.ctaText,
-  ctaLink: s.ctaLink,
-  image: s.image,
-  accent: s.accent ?? "green",
-}));
-
 export function HeroBanner() {
-  const { data: apiSlides = [] } = useQuery({
+  const { markHeroReady } = useBoot();
+  const { data: slides = [], isLoading, isFetched } = useQuery({
     queryKey: ["banners", "hero"],
     queryFn: getHeroBanners,
+    staleTime: 60 * 1000,
   });
 
-  const slides = apiSlides.length > 0 ? apiSlides : FALLBACK_SLIDES;
   const [active, setActive] = useState(0);
+  const [heroReady, setHeroReady] = useState(false);
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -37,8 +28,34 @@ export function HeroBanner() {
     return () => clearInterval(timer);
   }, [slides.length]);
 
-  const slide = slides[active] ?? slides[0];
-  if (!slide) return null;
+  // Preload first real banner only — never use demo/handshake fallbacks
+  useEffect(() => {
+    if (!isFetched) return;
+    const first = slides[0]?.image;
+    if (!first) {
+      setHeroReady(true);
+      markHeroReady();
+      return;
+    }
+    let cancelled = false;
+    const img = new window.Image();
+    img.onload = () => {
+      if (!cancelled) {
+        setHeroReady(true);
+        markHeroReady();
+      }
+    };
+    img.onerror = () => {
+      if (!cancelled) {
+        setHeroReady(true);
+        markHeroReady();
+      }
+    };
+    img.src = first;
+    return () => {
+      cancelled = true;
+    };
+  }, [isFetched, slides, markHeroReady]);
 
   const goPrev = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -57,6 +74,24 @@ export function HeroBanner() {
     e.stopPropagation();
     setActive(index);
   };
+
+  // Keep a solid placeholder under the boot overlay — never paint demo images
+  if (isLoading || !heroReady) {
+    return (
+      <section
+        className="relative min-h-[calc(100dvh-4.5rem)] bg-hero-gray md:min-h-[calc(100dvh-7.75rem)]"
+        aria-hidden
+      />
+    );
+  }
+
+  if (!slides.length) {
+    return (
+      <section className="relative flex min-h-[40vh] items-center justify-center bg-hero-gray md:min-h-[50vh]">
+        <p className="text-sm text-muted">No banners available</p>
+      </section>
+    );
+  }
 
   return (
     <section className="relative min-h-[calc(100dvh-4.5rem)] overflow-hidden md:min-h-[calc(100dvh-7.75rem)]">
