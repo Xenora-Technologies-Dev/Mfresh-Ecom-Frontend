@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { HeaderSearchBar, Logo, SearchBar } from "@/components/layout/search-bar";
 import { LocationSelector } from "@/components/layout/location-selector";
 import { CurrencySwitcher } from "@/components/shared/currency-switcher";
-import { CategoriesNavDropdown } from "@/components/layout/categories-nav-dropdown";
 import { NAV_LINKS, PORTAL_URL } from "@/lib/constants";
 import { useFavoritesStore } from "@/store/favorites-store";
 import { cn } from "@/lib/utils";
@@ -25,6 +24,11 @@ function portalLoginUrl() {
   return PORTAL_URL;
 }
 
+function isNavActive(pathname: string, href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -38,7 +42,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-[100] w-full border-b border-border bg-white shadow-sm">
       <div className="container-main">
-        <div className="flex h-[72px] items-center gap-3 lg:gap-4">
+        <div className="flex h-[80px] items-center gap-3 lg:gap-4">
           <Logo className="mr-1" />
 
           {!hideHeaderSearch && <HeaderSearchBar />}
@@ -67,13 +71,15 @@ export function Header() {
 
             <div className="ml-1 hidden h-8 w-px bg-border lg:block" />
 
-            <Link
+            <a
               href={portalLoginUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-secondary px-4 text-sm font-semibold text-white transition-colors hover:bg-secondary-dark lg:px-5"
             >
               <LogIn className="h-4 w-4 shrink-0" />
               Log In
-            </Link>
+            </a>
 
             <Link
               href="/become-buyer"
@@ -103,23 +109,24 @@ export function Header() {
 
       <div className="hidden border-t border-border bg-white md:block">
         <div className="container-main">
-          <nav className="flex h-11 items-center gap-8">
-            <CategoriesNavDropdown />
-            {NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "text-sm font-medium transition-colors",
-                  pathname === link.href
-                    ? "text-primary"
-                    : "text-dark-gray hover:text-primary",
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="ml-auto flex items-center gap-2 lg:hidden">
+          <nav className="flex h-11 w-full items-center gap-3">
+            <div className="flex min-w-0 flex-1 items-center justify-between gap-2 lg:gap-3">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "shrink-0 px-1 text-sm font-medium transition-colors",
+                    isNavActive(pathname, link.href)
+                      ? "text-primary"
+                      : "text-dark-gray hover:text-primary",
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+            <div className="ml-2 flex shrink-0 items-center gap-2 border-l border-border pl-3 lg:hidden">
               <Link
                 href="/become-buyer"
                 className="text-xs font-semibold text-primary hover:underline"
@@ -167,13 +174,15 @@ export function Header() {
                 </Link>
               </div>
               <div className="flex flex-col gap-2">
-                <Link
+                <a
                   href={portalLoginUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-secondary text-sm font-semibold text-white"
                 >
                   <LogIn className="h-4 w-4" />
                   Log In
-                </Link>
+                </a>
                 <div className="grid grid-cols-2 gap-2">
                   <Link
                     href="/become-buyer"
@@ -190,19 +199,13 @@ export function Header() {
                 </div>
               </div>
               <nav className="flex flex-col gap-1 border-t border-border pt-3">
-                <Link
-                  href="/categories"
-                  className="rounded-lg px-3 py-2.5 text-sm font-medium text-dark-gray hover:bg-light-gray"
-                >
-                  All Categories
-                </Link>
                 {NAV_LINKS.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     className={cn(
                       "rounded-lg px-3 py-2.5 text-sm font-medium",
-                      pathname === link.href
+                      isNavActive(pathname, link.href)
                         ? "bg-primary-muted text-primary"
                         : "text-dark-gray hover:bg-light-gray",
                     )}

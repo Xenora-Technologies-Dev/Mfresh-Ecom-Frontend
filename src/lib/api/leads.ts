@@ -1,7 +1,14 @@
 import { api } from "./client";
 
 export interface LeadPayload {
-  type: "contact" | "buyer" | "seller" | "newsletter" | "wishlist" | "quote";
+  type:
+    | "contact"
+    | "buyer"
+    | "seller"
+    | "newsletter"
+    | "wishlist"
+    | "quote"
+    | "distribution";
   contactName: string;
   email: string;
   businessName?: string;

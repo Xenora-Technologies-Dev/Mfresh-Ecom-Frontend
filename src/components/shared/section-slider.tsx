@@ -12,6 +12,8 @@ interface SectionSliderProps<T> {
   className?: string;
   autoPlay?: boolean;
   autoPlayIntervalMs?: number;
+  /** Keep grid height stable when the last page has fewer items */
+  fillEmptySlots?: boolean;
 }
 
 export function SectionSlider<T>({
@@ -22,6 +24,7 @@ export function SectionSlider<T>({
   className,
   autoPlay = false,
   autoPlayIntervalMs = 5000,
+  fillEmptySlots = false,
 }: SectionSliderProps<T>) {
   const [page, setPage] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -36,6 +39,11 @@ export function SectionSlider<T>({
     const start = currentPage * itemsPerPage;
     return items.slice(start, start + itemsPerPage);
   }, [items, currentPage, itemsPerPage]);
+
+  const emptyCount =
+    fillEmptySlots && pageItems.length > 0
+      ? Math.max(0, itemsPerPage - pageItems.length)
+      : 0;
 
   useEffect(() => {
     if (!autoPlay || totalPages <= 1 || paused) return;
@@ -57,7 +65,12 @@ export function SectionSlider<T>({
       onMouseLeave={() => setPaused(false)}
     >
       <div className={gridClassName}>
-        {pageItems.map((item, i) => renderItem(item, currentPage * itemsPerPage + i))}
+        {pageItems.map((item, i) =>
+          renderItem(item, currentPage * itemsPerPage + i),
+        )}
+        {Array.from({ length: emptyCount }).map((_, i) => (
+          <div key={`empty-${i}`} className="invisible min-h-[7.5rem]" aria-hidden />
+        ))}
       </div>
 
       {totalPages > 1 && (
@@ -81,7 +94,9 @@ export function SectionSlider<T>({
                 onClick={() => setPage(i)}
                 className={cn(
                   "h-2 rounded-full transition-all",
-                  i === currentPage ? "w-8 bg-secondary" : "w-2 bg-border hover:bg-secondary/40",
+                  i === currentPage
+                    ? "w-8 bg-secondary"
+                    : "w-2 bg-border hover:bg-secondary/40",
                 )}
               />
             ))}

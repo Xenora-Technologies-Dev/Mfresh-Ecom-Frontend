@@ -56,7 +56,7 @@ export function LoginRequiredModal({
         <p className="mb-6 text-sm leading-relaxed text-muted">{description}</p>
         <div className="flex flex-col gap-2.5">
           <Button size="lg" className="w-full gap-2" asChild>
-            <a href={loginUrl}>
+            <a href={loginUrl} target="_blank" rel="noopener noreferrer">
               <LogIn className="h-4 w-4" />
               Log in as Buyer
             </a>

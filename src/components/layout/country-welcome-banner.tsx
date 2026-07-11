@@ -3,15 +3,16 @@
 import { useEffect } from "react";
 import { Loader2, X } from "lucide-react";
 import { useRegionStore } from "@/store/region-store";
+import { CountryFlagIcon } from "@/components/shared/country-flag-icon";
 
 const LOAD_MS = 1200;
 const WELCOME_MS = 5000;
 
 export function CountryWelcomeBanner() {
   const phase = useRegionStore((s) => s.phase);
+  const country = useRegionStore((s) => s.country);
   const welcomeTitle = useRegionStore((s) => s.welcomeTitle);
   const welcomeBlurb = useRegionStore((s) => s.welcomeBlurb);
-  const welcomeFlag = useRegionStore((s) => s.welcomeFlag);
   const finishLoading = useRegionStore((s) => s.finishLoading);
   const clearWelcome = useRegionStore((s) => s.clearWelcome);
 
@@ -61,7 +62,11 @@ export function CountryWelcomeBanner() {
         <div className="bg-gradient-to-br from-primary to-primary-dark px-6 py-5 text-white">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="text-4xl leading-none">{welcomeFlag}</span>
+              {country ? (
+                <span className="shrink-0 rounded-full bg-white/15 p-1 ring-2 ring-white/30">
+                  <CountryFlagIcon country={country} size={40} />
+                </span>
+              ) : null}
               <h2
                 id="country-welcome-title"
                 className="text-lg font-bold leading-snug sm:text-xl"

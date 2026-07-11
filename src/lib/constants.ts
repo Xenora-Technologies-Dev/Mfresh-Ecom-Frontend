@@ -16,23 +16,26 @@ export const STOREFRONT_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3006";
 
 export const COLORS = {
-  primary: "#4DB87A",
-  primaryDark: "#3A9A64",
-  primaryLight: "#7DCE9E",
-  primaryMuted: "#E8F6EE",
-  secondary: "#FF9A56",
-  secondaryDark: "#E8863F",
-  freshMint: "#F4FAF6",
+  primary: "#00A651",
+  primaryDark: "#008A43",
+  primaryLight: "#33B873",
+  primaryMuted: "#E6F7ED",
+  secondary: "#2B3481",
+  secondaryDark: "#1F2760",
+  freshMint: "#F3FAF5",
   white: "#FFFFFF",
   lightGray: "#F5F8F6",
-  darkGray: "#2A3B30",
+  darkGray: "#2B3481",
 } as const;
 
 export const NAV_LINKS = [
+  { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
+  { href: "/distribution", label: "Distribution" },
+  { href: "/categories", label: "Categories" },
   { href: "/products", label: "Products" },
+  { href: "/contact", label: "Contact Us" },
   { href: "/faqs", label: "FAQs" },
-  { href: "/become-buyer", label: "Buyer FAQ" },
 ] as const;
 
 export const DEFAULT_REGION = "UAE";
@@ -45,6 +48,7 @@ export const FOOTER_LINKS = {
   ],
   company: [
     { href: "/about", label: "About Us" },
+    { href: "/distribution", label: "Distribution" },
     { href: "/contact", label: "Contact" },
     { href: "/faqs", label: "FAQs" },
   ],

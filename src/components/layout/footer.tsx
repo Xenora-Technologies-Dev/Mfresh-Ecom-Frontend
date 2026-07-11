@@ -32,11 +32,11 @@ export function Footer() {
   }));
 
   return (
-    <footer className="relative overflow-hidden border-t border-border bg-gradient-to-b from-dark-gray to-[#1a2a22] text-white">
+    <footer className="relative overflow-hidden border-t border-border bg-gradient-to-b from-secondary to-[#1a1f4a] text-white">
       <div className="container-main relative py-14 lg:py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="space-y-5 sm:col-span-2 lg:col-span-2">
-            <Logo className="[&_span]:text-white [&_svg_path]:text-secondary" />
+            <Logo variant="footer" />
             <p className="max-w-sm text-sm leading-relaxed text-white/70">
               {SITE_TAGLINE}. Your trusted wholesale food marketplace connecting
               buyers with premium products worldwide.
@@ -113,16 +113,31 @@ function FooterColumn({
         {title}
       </h3>
       <ul className="space-y-2.5">
-        {links.map((link) => (
-          <li key={link.href}>
-            <Link
-              href={link.href}
-              className="text-sm text-white/60 transition-colors hover:text-primary-light"
-            >
-              {link.label}
-            </Link>
-          </li>
-        ))}
+        {links.map((link) => {
+          const external =
+            link.href.startsWith("http") || link.href.includes("/login");
+          return (
+            <li key={link.href}>
+              {external ? (
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-white/60 transition-colors hover:text-primary-light"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  href={link.href}
+                  className="text-sm text-white/60 transition-colors hover:text-primary-light"
+                >
+                  {link.label}
+                </Link>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

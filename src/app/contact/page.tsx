@@ -13,6 +13,11 @@ import { AnimatedSection } from "@/components/shared/animated-section";
 import { getSiteSettings } from "@/lib/api/settings";
 import { submitLead } from "@/lib/api/leads";
 
+const CONTACT_EMAILS = [
+  { label: "Dubai", email: "dubai@mfreshsg.com" },
+  { label: "Singapore", email: "singapore@mfreshsg.com" },
+] as const;
+
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -47,12 +52,12 @@ export default function ContactPage() {
     <>
       <PageHero
         title="Contact Us"
-        subtitle="We'd love to hear from you. Reach out for support, partnerships, or inquiries."
+        subtitle="Reach our Dubai and Singapore teams for support, partnerships, or trade inquiries."
       />
       <AnimatedSection className="py-14 sm:py-20">
         <div className="container-main">
           <div className="grid gap-10 lg:grid-cols-5">
-            <div className="lg:col-span-2 space-y-6">
+            <div className="space-y-6 lg:col-span-2">
               <div className="rounded-2xl border border-gray-100 bg-light-gray/50 p-6">
                 <h3 className="font-semibold text-dark-gray">Get in Touch</h3>
                 <ul className="mt-4 space-y-4 text-sm text-muted">
@@ -62,17 +67,22 @@ export default function ContactPage() {
                       <span>{settings.support_address}</span>
                     </li>
                   )}
-                  {settings?.contact_email && (
-                    <li className="flex items-center gap-3">
+                  {CONTACT_EMAILS.map((item) => (
+                    <li key={item.email} className="flex items-center gap-3">
                       <Mail className="h-5 w-5 shrink-0 text-primary" />
-                      <a
-                        href={`mailto:${settings.contact_email}`}
-                        className="hover:text-primary"
-                      >
-                        {settings.contact_email}
-                      </a>
+                      <div>
+                        <p className="text-xs font-medium text-dark-gray">
+                          {item.label}
+                        </p>
+                        <a
+                          href={`mailto:${item.email}`}
+                          className="hover:text-primary"
+                        >
+                          {item.email}
+                        </a>
+                      </div>
                     </li>
-                  )}
+                  ))}
                   {settings?.contact_phone && (
                     <li className="flex items-center gap-3">
                       <Phone className="h-5 w-5 shrink-0 text-primary" />
@@ -81,7 +91,7 @@ export default function ContactPage() {
                   )}
                 </ul>
               </div>
-              <p className="text-sm text-muted leading-relaxed">
+              <p className="text-sm leading-relaxed text-muted">
                 Our team typically responds within 24 hours on business days.
               </p>
             </div>
@@ -101,54 +111,31 @@ export default function ContactPage() {
                     </p>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-5">
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input id="name" name="name" required placeholder="Your name" />
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="name">Name</Label>
+                        <Input id="name" name="name" required />
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                         <Label htmlFor="email">Email</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          required
-                          placeholder="you@company.com"
-                        />
+                        <Input id="email" name="email" type="email" required />
                       </div>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="company">Company</Label>
-                      <Input id="company" name="company" placeholder="Your company name" />
+                      <Input id="company" name="company" />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="subject">Subject</Label>
-                      <Input
-                        id="subject"
-                        name="subject"
-                        required
-                        placeholder="How can we help?"
-                      />
+                      <Input id="subject" name="subject" required />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       <Label htmlFor="message">Message</Label>
-                      <Textarea
-                        id="message"
-                        name="message"
-                        required
-                        placeholder="Tell us more..."
-                        rows={5}
-                      />
+                      <Textarea id="message" name="message" rows={5} required />
                     </div>
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="w-full sm:w-auto"
-                      disabled={loading}
-                    >
-                      {loading ? "Sending..." : "Send Message"}
-                      <Send className="h-4 w-4" />
+                    <Button type="submit" disabled={loading} className="w-full sm:w-auto">
+                      {loading ? "Sending…" : "Send Message"}
                     </Button>
                   </form>
                 )}

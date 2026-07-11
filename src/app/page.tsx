@@ -6,7 +6,6 @@ import {
   FeaturedProductsSection,
 } from "@/components/home/product-sections";
 import { CountriesSection } from "@/components/home/countries-section";
-import { LiveVesselTrafficSection } from "@/components/home/live-vessel-traffic-section";
 
 export default function HomePage() {
   return (
@@ -17,7 +16,6 @@ export default function HomePage() {
       <NewArrivalsSection />
       <FeaturedProductsSection />
       <CountriesSection />
-      <LiveVesselTrafficSection />
     </>
   );
 }

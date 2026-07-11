@@ -1,22 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  /* MFresh — light fresh palette (overridden at runtime by ThemeProvider) */
+  /* MFresh — seller green + logo navy (overridden at runtime by ThemeProvider) */
   --background: #ffffff;
-  --foreground: #2a3b30;
-  --primary: #4db87a;
-  --primary-dark: #3a9a64;
-  --primary-light: #7dce9e;
-  --primary-muted: #e8f6ee;
-  --secondary: #ff9a56;
-  --secondary-dark: #e8863f;
-  --secondary-muted: #fff4eb;
-  --fresh-mint: #f4faf6;
+  --foreground: #2b3481;
+  --primary: #00a651;
+  --primary-dark: #008a43;
+  --primary-light: #33b873;
+  --primary-muted: #e6f7ed;
+  --secondary: #2b3481;
+  --secondary-dark: #1f2760;
+  --secondary-muted: #e8eaf5;
+  --fresh-mint: #f3faf5;
   --light-gray: #f5f8f6;
-  --hero-gray: #eff5f1;
-  --dark-gray: #2a3b30;
-  --muted: #6b7c72;
-  --border: #dde8e2;
+  --hero-gray: #e8f7ee;
+  --dark-gray: #2b3481;
+  --muted: #5c678a;
+  --border: #d5e0dc;
   --surface: #ffffff;
   --theme-radius: 12px;
 }
@@ -182,8 +182,8 @@ body {
 .live-vessel-map-root .leaflet-container {
   font-family: inherit;
   z-index: 0 !important;
-  /* Match Google Maps–style sea blue while tiles load */
-  background: #aadaff !important;
+  /* Google Maps sea blue while tiles load */
+  background: #a5cef7 !important;
 }
 
 .live-vessel-map-root .leaflet-control-zoom {

@@ -7,7 +7,7 @@ import { AnimatedSection } from "@/components/shared/animated-section";
 import { SectionSlider } from "@/components/shared/section-slider";
 import { SectionHeader } from "@/components/shared/section-header";
 
-const CATEGORIES_PER_PAGE = 8;
+const CATEGORIES_PER_PAGE = 10;
 
 export function FoodCategoriesGrid() {
   const { data: categories = [], isLoading } = useQuery({
@@ -33,7 +33,7 @@ export function FoodCategoriesGrid() {
           <SectionSlider
             items={categories}
             itemsPerPage={CATEGORIES_PER_PAGE}
-            gridClassName="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+            gridClassName="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5"
             renderItem={(cat, i) => (
               <CategoryImageCard key={cat.id} category={cat} index={i} />
             )}

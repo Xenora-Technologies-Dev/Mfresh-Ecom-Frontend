@@ -1,5 +1,10 @@
-import { api, storageUrl } from "./client";
-import { DEFAULT_THEME, parseTheme, type StorefrontTheme } from "@/lib/theme";
+import { api } from "./client";
+import {
+  DEFAULT_LOGO_PATH,
+  DEFAULT_THEME,
+  parseTheme,
+  type StorefrontTheme,
+} from "@/lib/theme";
 
 export interface ThemeResponse {
   theme: StorefrontTheme;
@@ -8,19 +13,12 @@ export interface ThemeResponse {
   fromApi: boolean;
 }
 
-const THEME_CACHE_KEY = "mfresh-storefront-theme-v1";
+const THEME_CACHE_KEY = "mfresh-storefront-theme-v2";
 
-function resolveLogoUrl(
-  theme: StorefrontTheme,
-  apiLogoUrl?: string | null,
-): string | null {
+function resolveLogoUrl(theme: StorefrontTheme): string | null {
   if (theme.logoStyle !== "image") return null;
-  if (apiLogoUrl) return apiLogoUrl;
-  if (theme.logoPath) {
-    const url = storageUrl(theme.logoPath);
-    if (url && !url.includes("placeholder")) return url;
-  }
-  return null;
+  // Bundled public logo only — uploaded theme URLs often 404 and blank the UI.
+  return DEFAULT_LOGO_PATH;
 }
 
 function normalizeThemePayload(
@@ -30,7 +28,7 @@ function normalizeThemePayload(
   const theme = parseTheme(data.theme);
   return {
     theme,
-    logoUrl: resolveLogoUrl(theme, data.logoUrl),
+    logoUrl: resolveLogoUrl(theme),
     fromApi,
   };
 }
@@ -85,13 +83,13 @@ export async function getStorefrontTheme(): Promise<ThemeResponse> {
   } catch {
     const cached = readCachedTheme();
     if (cached) return cached;
-    return { theme: { ...DEFAULT_THEME }, logoUrl: null, fromApi: false };
+    return { theme: { ...DEFAULT_THEME }, logoUrl: DEFAULT_LOGO_PATH, fromApi: false };
   }
 }
 
 const FALLBACK_THEME: ThemeResponse = {
   theme: { ...DEFAULT_THEME },
-  logoUrl: null,
+  logoUrl: DEFAULT_LOGO_PATH,
   fromApi: false,
 };
 

@@ -30,7 +30,7 @@ const BOOT_SPLASH_CSS = `
 html:not([data-theme-ready="1"]) body::before{
   content:"";
   position:fixed;inset:0;z-index:99999;
-  background:#F4FAF6;
+  background:#F3FAF5;
 }
 `;
 

@@ -8,6 +8,7 @@ import { getCountries } from "@/lib/api/countries";
 import { DEFAULT_REGION } from "@/lib/constants";
 import { DEFAULT_COUNTRY_OPTIONS, mergeCountryLists } from "@/lib/countries";
 import { useRegionStore } from "@/store/region-store";
+import { CountryFlagIcon } from "@/components/shared/country-flag-icon";
 import {
   Select,
   SelectContent,
@@ -72,7 +73,10 @@ export function LocationSelector({ compact }: { compact?: boolean }) {
       <SelectContent align="end" className="z-[200] max-h-72">
         {options.map((name) => (
           <SelectItem key={name} value={name} className="cursor-pointer">
-            {name}
+            <span className="flex items-center gap-2">
+              <CountryFlagIcon country={name} size={18} />
+              <span>{name}</span>
+            </span>
           </SelectItem>
         ))}
       </SelectContent>

@@ -26,7 +26,7 @@ export function CategoryImageCard({
       className={cn("group", className)}
     >
       <Link href={`/categories/${category.slug}`} className="block">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border/60 shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md sm:aspect-square">
+        <div className="relative aspect-[5/4] overflow-hidden rounded-lg border border-border/60 shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md sm:aspect-[4/3]">
           <Image
             src={category.image}
             alt={category.name}
@@ -35,7 +35,7 @@ export function CategoryImageCard({
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-          <p className="absolute inset-x-0 bottom-0 px-3 py-3 text-center text-sm font-semibold text-white sm:text-base">
+          <p className="absolute inset-x-0 bottom-0 px-2 py-2 text-center text-xs font-semibold text-white sm:px-2.5 sm:py-2.5 sm:text-sm">
             {category.name}
           </p>
         </div>

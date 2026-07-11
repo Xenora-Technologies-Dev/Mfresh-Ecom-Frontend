@@ -17,6 +17,7 @@ import {
   type ThemeResponse,
 } from "@/lib/api/theme";
 import {
+  DEFAULT_LOGO_PATH,
   DEFAULT_THEME,
   applyThemeToDocument,
   type StorefrontTheme,
@@ -93,8 +94,9 @@ export function ThemeProvider({ children, initialTheme }: ThemeProviderProps) {
 
       if (!current.fromApi && !isFetched) return;
 
-      if (current.theme.logoStyle === "image" && current.logoUrl) {
-        await preloadImage(current.logoUrl);
+      if (current.theme.logoStyle === "image") {
+        // Always preload the bundled asset — theme CDN URLs often 404.
+        await preloadImage(DEFAULT_LOGO_PATH);
       }
 
       if (!cancelled) {

@@ -2,6 +2,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { PromoMessageBar } from "@/components/layout/promo-message-bar";
 import { CountryWelcomeBanner } from "@/components/layout/country-welcome-banner";
+import { GetStartedModal } from "@/components/layout/get-started-modal";
 import { FloatingWidgets } from "@/components/layout/floating-widgets";
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
@@ -10,6 +11,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       <PromoMessageBar />
       <Header />
       <CountryWelcomeBanner />
+      <GetStartedModal />
       <main className="flex-1">{children}</main>
       <Footer />
       <FloatingWidgets />

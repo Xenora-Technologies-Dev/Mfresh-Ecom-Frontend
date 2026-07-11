@@ -8,6 +8,7 @@ import {
   getCountryMeta,
   getDefaultCountriesWithFlags,
 } from "@/lib/countries";
+import { CountryFlagIcon } from "@/components/shared/country-flag-icon";
 import { AnimatedSection } from "@/components/shared/animated-section";
 import { SectionHeader } from "@/components/shared/section-header";
 import { SectionSlider } from "@/components/shared/section-slider";
@@ -20,9 +21,9 @@ function CountryCard({ country }: { country: Country }) {
   return (
     <Link
       href={`/products?country=${encodeURIComponent(country.name)}`}
-      className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-surface p-4 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary-light/30 hover:shadow-md"
+      className="flex min-h-[7.5rem] flex-col items-center gap-1.5 rounded-xl border border-border bg-surface p-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary-light/30 hover:shadow-md sm:min-h-[8rem] sm:p-3.5"
     >
-      <span className="text-3xl">{country.flag || getCountryMeta(country.name).flag}</span>
+      <CountryFlagIcon country={country.name} size={44} />
       <span className="text-xs font-semibold text-dark-gray sm:text-sm">
         {country.name}
       </span>
@@ -91,7 +92,8 @@ export function CountriesSection() {
             itemsPerPage={COUNTRIES_PER_PAGE}
             autoPlay
             autoPlayIntervalMs={5000}
-            gridClassName="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4"
+            fillEmptySlots
+            gridClassName="grid min-h-[16.5rem] grid-cols-2 content-start gap-3 sm:min-h-[17.5rem] sm:grid-cols-5 sm:gap-4"
             renderItem={(country) => (
               <CountryCard key={country.id} country={country} />
             )}

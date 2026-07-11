@@ -73,7 +73,7 @@ export function BootProvider({ children }: { children: React.ReactNode }) {
     <BootContext.Provider value={value}>
       {!isBooted && (
         <div
-          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center gap-4 bg-[#F4FAF6]"
+          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center gap-4 bg-[#F3FAF5]"
           role="status"
           aria-live="polite"
           aria-label="Loading"
