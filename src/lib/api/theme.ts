@@ -13,7 +13,7 @@ export interface ThemeResponse {
   fromApi: boolean;
 }
 
-const THEME_CACHE_KEY = "mfresh-storefront-theme-v2";
+const THEME_CACHE_KEY = "mfresh-storefront-theme-v3";
 
 function resolveLogoUrl(theme: StorefrontTheme): string | null {
   if (theme.logoStyle !== "image") return null;

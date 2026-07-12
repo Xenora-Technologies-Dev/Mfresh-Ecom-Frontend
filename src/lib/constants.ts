@@ -20,12 +20,12 @@ export const COLORS = {
   primaryDark: "#008A43",
   primaryLight: "#33B873",
   primaryMuted: "#E6F7ED",
-  secondary: "#2B3481",
-  secondaryDark: "#1F2760",
+  secondary: "#1C1D71",
+  secondaryDark: "#14155A",
   freshMint: "#F3FAF5",
   white: "#FFFFFF",
   lightGray: "#F5F8F6",
-  darkGray: "#2B3481",
+  darkGray: "#1C1D71",
 } as const;
 
 export const NAV_LINKS = [
@@ -34,6 +34,8 @@ export const NAV_LINKS = [
   { href: "/distribution", label: "Distribution" },
   { href: "/categories", label: "Categories" },
   { href: "/products", label: "Products" },
+  { href: "/live-shipping-tracker", label: "Live Shipping Tracker" },
+  { href: "/media-center", label: "Media Center" },
   { href: "/contact", label: "Contact Us" },
   { href: "/faqs", label: "FAQs" },
 ] as const;
@@ -49,6 +51,8 @@ export const FOOTER_LINKS = {
   company: [
     { href: "/about", label: "About Us" },
     { href: "/distribution", label: "Distribution" },
+    { href: "/live-shipping-tracker", label: "Live Shipping Tracker" },
+    { href: "/media-center", label: "Media Center" },
     { href: "/contact", label: "Contact" },
     { href: "/faqs", label: "FAQs" },
   ],

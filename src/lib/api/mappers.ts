@@ -122,13 +122,16 @@ export function mapProduct(raw: any): Product {
 
 export function mapBanner(raw: any, index = 0): Banner {
   const accents: Banner["accent"][] = ["green", "orange", "green", "orange"];
+  const image = storageUrl(raw.imageUrl ?? raw.image);
+  const mobileRaw = raw.mobileImageUrl ?? raw.mobileImage;
   return {
     id: raw.id,
     title: raw.title,
     subtitle: raw.subtitle ?? "",
     ctaText: raw.ctaText ?? "Learn More",
     ctaLink: raw.ctaLink ?? "/products",
-    image: storageUrl(raw.imageUrl ?? raw.image),
+    image,
+    mobileImage: mobileRaw ? storageUrl(mobileRaw) : undefined,
     accent: (raw.accent as Banner["accent"]) ?? accents[index % accents.length],
   };
 }

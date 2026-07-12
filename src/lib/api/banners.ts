@@ -15,8 +15,20 @@ async function fetchBanners(type?: string): Promise<Banner[]> {
   return (res.data ?? []).map((b, i) => mapBanner(b, i));
 }
 
+/**
+ * Desktop hero slides + optional MOBILE-type crops paired by sort order.
+ * When no MOBILE banners exist, desktop image is used at every breakpoint.
+ */
 export async function getHeroBanners(): Promise<Banner[]> {
-  return fetchBanners("HERO_SLIDER");
+  const [desktop, mobile] = await Promise.all([
+    fetchBanners("HERO_SLIDER"),
+    fetchBanners("MOBILE").catch(() => [] as Banner[]),
+  ]);
+
+  return desktop.map((banner, i) => ({
+    ...banner,
+    mobileImage: banner.mobileImage || mobile[i]?.image || banner.image,
+  }));
 }
 
 export async function getPromoBanners(): Promise<Banner[]> {

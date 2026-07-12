@@ -67,6 +67,8 @@ export interface Banner {
   ctaText: string;
   ctaLink: string;
   image: string;
+  /** Optional portrait / mobile crop — falls back to `image` */
+  mobileImage?: string;
   accent: "navy" | "red" | "green" | "orange";
 }
 

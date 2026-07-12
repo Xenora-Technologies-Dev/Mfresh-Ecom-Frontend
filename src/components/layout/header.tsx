@@ -42,8 +42,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-[100] w-full border-b border-border bg-white shadow-sm">
       <div className="container-main">
-        <div className="flex h-[80px] items-center gap-3 lg:gap-4">
-          <Logo className="mr-1" />
+        <div className="flex h-[68px] items-center gap-2 sm:h-[80px] sm:gap-3 lg:gap-4">
+          <Logo className="mr-0.5 sm:mr-1" />
 
           {!hideHeaderSearch && <HeaderSearchBar />}
 
@@ -109,14 +109,14 @@ export function Header() {
 
       <div className="hidden border-t border-border bg-white md:block">
         <div className="container-main">
-          <nav className="flex h-11 w-full items-center gap-3">
-            <div className="flex min-w-0 flex-1 items-center justify-between gap-2 lg:gap-3">
+          <nav className="flex h-11 w-full items-center gap-2 lg:gap-3">
+            <div className="-mx-1 flex min-w-0 flex-1 items-center justify-between gap-1 overflow-x-auto px-1 scrollbar-none lg:gap-2">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "shrink-0 px-1 text-sm font-medium transition-colors",
+                    "shrink-0 whitespace-nowrap px-1.5 py-2 text-xs font-medium transition-colors lg:px-2 lg:text-sm",
                     isNavActive(pathname, link.href)
                       ? "text-primary"
                       : "text-dark-gray hover:text-primary",
@@ -126,17 +126,17 @@ export function Header() {
                 </Link>
               ))}
             </div>
-            <div className="ml-2 flex shrink-0 items-center gap-2 border-l border-border pl-3 lg:hidden">
+            <div className="ml-1 hidden shrink-0 items-center gap-2 border-l border-border pl-3 md:flex lg:hidden">
               <Link
                 href="/become-buyer"
-                className="text-xs font-semibold text-primary hover:underline"
+                className="whitespace-nowrap text-xs font-semibold text-primary hover:underline"
               >
                 Register as Buyer
               </Link>
               <span className="text-border">|</span>
               <Link
                 href="/become-seller"
-                className="text-xs font-semibold text-secondary hover:underline"
+                className="whitespace-nowrap text-xs font-semibold text-secondary hover:underline"
               >
                 Register as Seller
               </Link>

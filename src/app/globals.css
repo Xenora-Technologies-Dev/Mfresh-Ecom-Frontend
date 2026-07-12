@@ -3,19 +3,19 @@
 :root {
   /* MFresh — seller green + logo navy (overridden at runtime by ThemeProvider) */
   --background: #ffffff;
-  --foreground: #2b3481;
+  --foreground: #1c1d71;
   --primary: #00a651;
   --primary-dark: #008a43;
   --primary-light: #33b873;
   --primary-muted: #e6f7ed;
-  --secondary: #2b3481;
-  --secondary-dark: #1f2760;
-  --secondary-muted: #e8eaf5;
+  --secondary: #1c1d71;
+  --secondary-dark: #14155a;
+  --secondary-muted: #e8e9f4;
   --fresh-mint: #f3faf5;
   --light-gray: #f5f8f6;
   --hero-gray: #e8f7ee;
-  --dark-gray: #2b3481;
-  --muted: #5c678a;
+  --dark-gray: #1c1d71;
+  --muted: #5a5c8a;
   --border: #d5e0dc;
   --surface: #ffffff;
   --theme-radius: 12px;
@@ -38,9 +38,9 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-surface: var(--surface);
-  --color-navy: var(--primary-dark);
-  --color-navy-dark: var(--primary-dark);
-  --color-brand-red: var(--secondary);
+  --color-navy: var(--secondary);
+  --color-navy-dark: var(--secondary-dark);
+  --color-brand-red: #e31937;
   --font-sans: var(--font-plus-jakarta);
 }
 
@@ -88,6 +88,15 @@ body {
   .container-main {
     padding-inline: 2rem;
   }
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 .gradient-text {

@@ -7,16 +7,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getHeroBanners } from "@/lib/api/banners";
 import { useBoot } from "@/providers/boot-provider";
-import { HeroLiveTrackerSlide } from "@/components/home/hero-live-tracker-slide";
 import { cn } from "@/lib/utils";
 
-type HeroPanel = "tracker" | "banners";
-
-/** Switch between map container and image-slider container */
-const PANEL_SWITCH_MS = 6_500;
-/** Cycle images inside the banner container */
 const BANNER_SLIDE_MS = 5_500;
-const TRANSITION_MS = 800;
 
 export function HeroBanner() {
   const { markHeroReady } = useBoot();
@@ -26,13 +19,12 @@ export function HeroBanner() {
     staleTime: 60 * 1000,
   });
 
-  const [panel, setPanel] = useState<HeroPanel>("tracker");
   const [bannerIndex, setBannerIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [heroReady, setHeroReady] = useState(false);
+  const [isNarrow, setIsNarrow] = useState(false);
 
   const hasBanners = banners.length > 0;
-  const canSwitchPanels = hasBanners;
 
   useEffect(() => {
     if (!isFetched) return;
@@ -41,56 +33,56 @@ export function HeroBanner() {
   }, [isFetched, markHeroReady]);
 
   useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const sync = () => setIsNarrow(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
     if (!isFetched) return;
     banners.forEach((b) => {
-      if (!b.image) return;
-      const img = new window.Image();
-      img.src = b.image;
+      [b.image, b.mobileImage].forEach((src) => {
+        if (!src) return;
+        const img = new window.Image();
+        img.src = src;
+      });
     });
   }, [isFetched, banners]);
 
-  // Auto-switch between tracker ↔ banners containers
   useEffect(() => {
-    if (paused || !heroReady || !canSwitchPanels) return;
-    const timer = setTimeout(() => {
-      setPanel((prev) => (prev === "tracker" ? "banners" : "tracker"));
-    }, PANEL_SWITCH_MS);
-    return () => clearTimeout(timer);
-  }, [panel, paused, heroReady, canSwitchPanels]);
-
-  // Inner banner image carousel (only while banners panel is active)
-  useEffect(() => {
-    if (paused || panel !== "banners" || banners.length <= 1) return;
+    if (paused || banners.length <= 1) return;
     const timer = setTimeout(() => {
       setBannerIndex((i) => (i + 1) % banners.length);
     }, BANNER_SLIDE_MS);
     return () => clearTimeout(timer);
-  }, [panel, bannerIndex, paused, banners.length]);
+  }, [bannerIndex, paused, banners.length]);
 
   const goPrev = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      if (!canSwitchPanels) return;
-      setPanel((prev) => (prev === "tracker" ? "banners" : "tracker"));
+      if (banners.length <= 1) return;
+      setBannerIndex((i) => (i - 1 + banners.length) % banners.length);
     },
-    [canSwitchPanels],
+    [banners.length],
   );
 
   const goNext = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      if (!canSwitchPanels) return;
-      setPanel((prev) => (prev === "tracker" ? "banners" : "tracker"));
+      if (banners.length <= 1) return;
+      setBannerIndex((i) => (i + 1) % banners.length);
     },
-    [canSwitchPanels],
+    [banners.length],
   );
 
   if (!heroReady) {
     return (
       <section
-        className="relative min-h-[calc(100dvh-5rem)] bg-hero-gray md:min-h-[calc(100dvh-7.75rem)]"
+        className="relative min-h-[min(58dvh,420px)] bg-hero-gray sm:min-h-[min(62dvh,520px)] md:min-h-[calc(100dvh-7.75rem)]"
         aria-hidden
       />
     );
@@ -98,83 +90,76 @@ export function HeroBanner() {
 
   return (
     <section
-      className="relative min-h-[calc(100dvh-5rem)] overflow-hidden md:min-h-[calc(100dvh-7.75rem)]"
+      className="relative min-h-[min(58dvh,420px)] overflow-hidden sm:min-h-[min(62dvh,520px)] md:min-h-[calc(100dvh-7.75rem)]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
       aria-label="Homepage hero"
     >
-      {/* Container 1 — Live tracker map */}
-      <div
-        className={cn(
-          "absolute inset-0 transition-opacity ease-in-out",
-          panel === "tracker"
-            ? "z-[1] opacity-100"
-            : "z-0 pointer-events-none opacity-0",
-        )}
-        style={{ transitionDuration: `${TRANSITION_MS}ms` }}
-        aria-hidden={panel !== "tracker"}
-      >
-        <HeroLiveTrackerSlide isActive={panel === "tracker"} />
-      </div>
+      {hasBanners ? (
+        <div className="absolute inset-0">
+          {banners.map((s, i) => {
+            const isActive = i === bannerIndex;
+            const src =
+              isNarrow && s.mobileImage ? s.mobileImage : s.image || s.mobileImage;
+            const content = src ? (
+              <Image
+                src={src}
+                alt={s.ctaText || s.title || "Hero banner"}
+                fill
+                className="object-cover object-center"
+                priority={i === 0}
+                sizes="(max-width: 767px) 100vw, 100vw"
+              />
+            ) : (
+              <div className="h-full w-full bg-hero-gray" />
+            );
 
-      {/* Container 2 — Image slider */}
-      <div
-        className={cn(
-          "absolute inset-0 transition-opacity ease-in-out",
-          panel === "banners"
-            ? "z-[1] opacity-100"
-            : "z-0 pointer-events-none opacity-0",
-        )}
-        style={{ transitionDuration: `${TRANSITION_MS}ms` }}
-        aria-hidden={panel !== "banners"}
-      >
-        {hasBanners ? (
-          <div className="relative h-full w-full">
-            {banners.map((s, i) => {
-              const isActive = i === bannerIndex;
-              const content = s.image ? (
-                <Image
-                  src={s.image}
-                  alt={s.ctaText || "Hero banner"}
-                  fill
-                  className="object-cover"
-                  priority={i === 0}
-                  sizes="100vw"
-                />
-              ) : (
-                <div className="h-full w-full bg-hero-gray" />
-              );
+            return (
+              <div
+                key={s.id}
+                className={cn(
+                  "absolute inset-0 transition-opacity duration-700 ease-in-out",
+                  isActive ? "opacity-100" : "pointer-events-none opacity-0",
+                )}
+                aria-hidden={!isActive}
+              >
+                {s.ctaLink ? (
+                  <Link
+                    href={s.ctaLink}
+                    className="group relative block h-full w-full cursor-pointer"
+                    aria-label={s.ctaText || "View more"}
+                    tabIndex={isActive ? 0 : -1}
+                  >
+                    {content}
+                  </Link>
+                ) : (
+                  <div className="relative h-full w-full">{content}</div>
+                )}
+              </div>
+            );
+          })}
 
-              return (
-                <div
-                  key={s.id}
-                  className={cn(
-                    "absolute inset-0 transition-opacity duration-700 ease-in-out",
-                    isActive
-                      ? "opacity-100"
-                      : "pointer-events-none opacity-0",
-                  )}
-                  aria-hidden={!isActive}
-                >
-                  {s.ctaLink ? (
-                    <Link
-                      href={s.ctaLink}
-                      className="group relative block h-full w-full cursor-pointer"
-                      aria-label={s.ctaText || "View more"}
-                      tabIndex={panel === "banners" && isActive ? 0 : -1}
-                    >
-                      {content}
-                    </Link>
-                  ) : (
-                    <div className="relative h-full w-full">{content}</div>
-                  )}
-                </div>
-              );
-            })}
+          {banners.length > 1 && (
+            <>
+              <button
+                type="button"
+                aria-label="Previous banner"
+                onClick={goPrev}
+                className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white/95 text-dark-gray shadow-lg shadow-black/20 transition hover:scale-105 sm:left-4 sm:h-11 sm:w-11 md:left-5 md:h-12 md:w-12"
+              >
+                <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" strokeWidth={2.5} />
+              </button>
+              <button
+                type="button"
+                aria-label="Next banner"
+                onClick={goNext}
+                className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white/95 text-dark-gray shadow-lg shadow-black/20 transition hover:scale-105 sm:right-4 sm:h-11 sm:w-11 md:right-5 md:h-12 md:w-12"
+              >
+                <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7" strokeWidth={2.5} />
+              </button>
 
-            {banners.length > 1 && panel === "banners" && (
-              <div className="pointer-events-none absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 gap-2 sm:bottom-8">
+              <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5 sm:bottom-5 sm:gap-2 md:bottom-8">
                 {banners.map((s, i) => (
                   <button
                     key={s.id}
@@ -186,74 +171,21 @@ export function HeroBanner() {
                       setBannerIndex(i);
                     }}
                     className={cn(
-                      "pointer-events-auto h-2.5 rounded-full border border-black/10 shadow-sm transition-all",
+                      "pointer-events-auto h-2 rounded-full border border-black/10 shadow-sm transition-all sm:h-2.5",
                       i === bannerIndex
-                        ? "w-8 bg-white"
-                        : "w-2.5 bg-white/70 hover:bg-white",
+                        ? "w-6 bg-white sm:w-8"
+                        : "w-2 bg-white/70 hover:bg-white sm:w-2.5",
                     )}
                   />
                 ))}
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="flex h-full items-center justify-center bg-hero-gray text-sm text-muted">
-            No banners available
-          </div>
-        )}
-      </div>
-
-      {canSwitchPanels && (
-        <>
-          <button
-            type="button"
-            aria-label="Previous panel"
-            onClick={goPrev}
-            className="absolute left-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-dark-gray shadow-lg shadow-black/25 transition hover:scale-105 hover:bg-white hover:shadow-xl sm:left-5 sm:h-12 sm:w-12"
-          >
-            <ChevronLeft className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2.5} />
-          </button>
-          <button
-            type="button"
-            aria-label="Next panel"
-            onClick={goNext}
-            className="absolute right-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white text-dark-gray shadow-lg shadow-black/25 transition hover:scale-105 hover:bg-white hover:shadow-xl sm:right-5 sm:h-12 sm:w-12"
-          >
-            <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2.5} />
-          </button>
-
-          {/* Two panel indicators (map | banners) */}
-          <div className="pointer-events-none absolute bottom-5 right-5 z-10 flex gap-2 sm:bottom-8 sm:right-8">
-            <button
-              type="button"
-              aria-label="Show shipping tracker"
-              onClick={(e) => {
-                e.preventDefault();
-                setPanel("tracker");
-              }}
-              className={cn(
-                "pointer-events-auto h-2.5 rounded-full border border-black/10 shadow-sm transition-all",
-                panel === "tracker"
-                  ? "w-8 bg-primary"
-                  : "w-2.5 bg-white/80 hover:bg-white",
-              )}
-            />
-            <button
-              type="button"
-              aria-label="Show banner slider"
-              onClick={(e) => {
-                e.preventDefault();
-                setPanel("banners");
-              }}
-              className={cn(
-                "pointer-events-auto h-2.5 rounded-full border border-black/10 shadow-sm transition-all",
-                panel === "banners"
-                  ? "w-8 bg-white"
-                  : "w-2.5 bg-white/80 hover:bg-white",
-              )}
-            />
-          </div>
-        </>
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="flex h-full min-h-[inherit] items-center justify-center bg-hero-gray px-4 text-center text-sm text-muted">
+          No banners available
+        </div>
       )}
     </section>
   );

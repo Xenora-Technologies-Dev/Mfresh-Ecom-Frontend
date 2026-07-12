@@ -22,7 +22,7 @@ export interface StorefrontTheme {
 }
 
 /**
- * Seller green (#00A651) + logo navy (#0B2A5B).
+ * Seller green (#00A651) + logo navy (#1C1D71) sampled from the M Fresh mark.
  * Soft mint surfaces match the seller portal chip.
  */
 export const DEFAULT_THEME: StorefrontTheme = {
@@ -31,10 +31,10 @@ export const DEFAULT_THEME: StorefrontTheme = {
   logoPath: DEFAULT_LOGO_PATH,
   siteTagline: "Global B2B Food Marketplace",
   primary: "#00A651",
-  secondary: "#2B3481",
+  secondary: "#1C1D71",
   background: "#FFFFFF",
   surface: "#FFFFFF",
-  text: "#2B3481",
+  text: "#1C1D71",
   heroBackground: "#E8F7EE",
   freshMint: "#F3FAF5",
   borderRadius: "soft",
@@ -55,11 +55,11 @@ export const THEME_PRESETS: Record<
     theme: {
       preset: "fresh-mint",
       primary: "#16A34A",
-      secondary: "#2B3481",
+      secondary: "#1C1D71",
       background: "#F8FCF9",
       heroBackground: "#EAF8EF",
       freshMint: "#F0FAF4",
-      text: "#2B3481",
+      text: "#1C1D71",
     },
   },
   "ocean-blue": {
@@ -67,12 +67,12 @@ export const THEME_PRESETS: Record<
     description: "Logo navy lead with seller-green accents",
     theme: {
       preset: "ocean-blue",
-      primary: "#2B3481",
+      primary: "#1C1D71",
       secondary: "#00A651",
       background: "#F7F9FC",
       heroBackground: "#EEF2F8",
       freshMint: "#F4F6FB",
-      text: "#2B3481",
+      text: "#1C1D71",
     },
   },
   "warm-harvest": {
@@ -125,6 +125,19 @@ export function mixWithWhite(hex: string, amount: number) {
 export function parseTheme(raw: unknown): StorefrontTheme {
   if (!raw || typeof raw !== "object") return { ...DEFAULT_THEME };
   const data = raw as Partial<StorefrontTheme>;
+  const legacyNavy = new Set(["#2B3481", "#2b3481"]);
+  const secondary =
+    typeof data.secondary === "string" && data.secondary
+      ? legacyNavy.has(data.secondary)
+        ? DEFAULT_THEME.secondary
+        : data.secondary
+      : DEFAULT_THEME.secondary;
+  const text =
+    typeof data.text === "string" && data.text
+      ? legacyNavy.has(data.text)
+        ? DEFAULT_THEME.text
+        : data.text
+      : DEFAULT_THEME.text;
   return {
     ...DEFAULT_THEME,
     ...data,
@@ -134,6 +147,8 @@ export function parseTheme(raw: unknown): StorefrontTheme {
       typeof data.logoPath === "string" && data.logoPath
         ? data.logoPath
         : DEFAULT_LOGO_PATH,
+    secondary,
+    text,
   };
 }
 

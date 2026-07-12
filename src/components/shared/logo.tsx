@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  * a missing/broken theme upload cannot blank the header/footer.
  */
 const LOGO_BOX =
-  "relative block h-[60px] w-[140px] shrink-0 overflow-visible sm:h-[66px] sm:w-[154px] lg:h-[72px] lg:w-[168px]";
+  "relative block h-[48px] w-[112px] shrink-0 overflow-visible sm:h-[60px] sm:w-[140px] lg:h-[68px] lg:w-[158px]";
 
 export function Logo({
   className,
