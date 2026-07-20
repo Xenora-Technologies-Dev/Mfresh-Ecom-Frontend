@@ -4,6 +4,8 @@ export type VesselType = "reefer" | "container" | "bulk";
 export interface Vessel {
   id: string;
   name: string;
+  /** Shipping / booking reference — used for Track Your Shipment lookup */
+  referenceNo: string;
   lat: number;
   lng: number;
   heading: number;
@@ -12,6 +14,13 @@ export interface Vessel {
   cargo: string;
   region: string;
   port: string;
+  origin: string;
+  destination: string;
+  /** ISO date string — estimated time of departure */
+  etd: string;
+  /** ISO date string — estimated time of arrival */
+  eta: string;
+  imo: string;
   speedKnots: number;
 }
 
@@ -45,12 +54,15 @@ interface RegionConfig {
   ports: Port[];
 }
 
-/** MFresh trade regions — vessel counts per country/region with major ports */
+/**
+ * MFresh trade regions — vessel counts scaled so the fleet stays ~100–120 ships.
+ * Sum of baseCount ≈ 110; window drift keeps live total in that band.
+ */
 const REGIONS: RegionConfig[] = [
   {
     key: "india",
     label: "India",
-    baseCount: 22,
+    baseCount: 5,
     ports: [
       { name: "Mumbai (JNPT)", lat: 18.95, lng: 72.95 },
       { name: "Chennai", lat: 13.08, lng: 80.29 },
@@ -67,7 +79,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "sri-lanka",
     label: "Sri Lanka",
-    baseCount: 8,
+    baseCount: 2,
     ports: [
       { name: "Colombo", lat: 6.94, lng: 79.85 },
       { name: "Hambantota", lat: 6.12, lng: 81.12 },
@@ -77,7 +89,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "australia",
     label: "Australia",
-    baseCount: 4,
+    baseCount: 1,
     ports: [
       { name: "Sydney", lat: -33.87, lng: 151.21 },
       { name: "Melbourne", lat: -37.84, lng: 144.94 },
@@ -88,7 +100,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "afghanistan",
     label: "Afghanistan",
-    baseCount: 6,
+    baseCount: 1,
     ports: [
       { name: "Chabahar (trade)", lat: 25.3, lng: 60.62 },
       { name: "Bandar Abbas", lat: 27.18, lng: 56.28 },
@@ -98,7 +110,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "uae",
     label: "UAE",
-    baseCount: 18,
+    baseCount: 4,
     ports: [
       { name: "Jebel Ali", lat: 25.01, lng: 55.06 },
       { name: "Dubai", lat: 25.27, lng: 55.3 },
@@ -111,7 +123,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "oman",
     label: "Oman",
-    baseCount: 10,
+    baseCount: 2,
     ports: [
       { name: "Sohar", lat: 24.47, lng: 56.64 },
       { name: "Muscat", lat: 23.62, lng: 58.59 },
@@ -121,7 +133,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "saudi",
     label: "Saudi Arabia",
-    baseCount: 18,
+    baseCount: 4,
     ports: [
       { name: "Jeddah", lat: 21.49, lng: 39.19 },
       { name: "Dammam", lat: 26.43, lng: 50.1 },
@@ -133,7 +145,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "qatar",
     label: "Qatar",
-    baseCount: 8,
+    baseCount: 2,
     ports: [
       { name: "Hamad Port", lat: 25.0, lng: 51.55 },
       { name: "Doha", lat: 25.29, lng: 51.53 },
@@ -143,7 +155,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "bahrain",
     label: "Bahrain",
-    baseCount: 9,
+    baseCount: 2,
     ports: [
       { name: "Khalifa Bin Salman", lat: 26.2, lng: 50.61 },
       { name: "Mina Salman", lat: 26.2, lng: 50.58 },
@@ -152,7 +164,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "kuwait",
     label: "Kuwait",
-    baseCount: 9,
+    baseCount: 2,
     ports: [
       { name: "Shuwaikh", lat: 29.35, lng: 47.93 },
       { name: "Shuaiba", lat: 29.04, lng: 48.16 },
@@ -162,7 +174,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "kenya",
     label: "Kenya",
-    baseCount: 4,
+    baseCount: 1,
     ports: [
       { name: "Mombasa", lat: -4.06, lng: 39.67 },
       { name: "Lamu", lat: -2.27, lng: 40.9 },
@@ -171,7 +183,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "senegal",
     label: "Senegal",
-    baseCount: 7,
+    baseCount: 2,
     ports: [
       { name: "Dakar", lat: 14.67, lng: -17.43 },
       { name: "Kaolack", lat: 14.15, lng: -16.08 },
@@ -180,7 +192,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "chad",
     label: "Chad",
-    baseCount: 4,
+    baseCount: 1,
     ports: [
       { name: "Douala (transit)", lat: 4.05, lng: 9.7 },
       { name: "Port Sudan (transit)", lat: 19.62, lng: 37.22 },
@@ -189,7 +201,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "ethiopia",
     label: "Ethiopia",
-    baseCount: 22,
+    baseCount: 5,
     ports: [
       { name: "Djibouti", lat: 11.59, lng: 43.15 },
       { name: "Berbera", lat: 10.44, lng: 45.01 },
@@ -199,7 +211,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "germany",
     label: "Germany",
-    baseCount: 3,
+    baseCount: 1,
     ports: [
       { name: "Hamburg", lat: 53.55, lng: 9.99 },
       { name: "Bremen", lat: 53.08, lng: 8.8 },
@@ -208,7 +220,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "congo",
     label: "Congo",
-    baseCount: 5,
+    baseCount: 1,
     ports: [
       { name: "Pointe-Noire", lat: -4.78, lng: 11.86 },
       { name: "Matadi", lat: -5.82, lng: 13.46 },
@@ -217,13 +229,13 @@ const REGIONS: RegionConfig[] = [
   {
     key: "maldives",
     label: "Maldives",
-    baseCount: 2,
+    baseCount: 1,
     ports: [{ name: "Malé", lat: 4.17, lng: 73.51 }],
   },
   {
     key: "east-africa",
     label: "East Africa",
-    baseCount: 25,
+    baseCount: 6,
     ports: [
       { name: "Mombasa", lat: -4.06, lng: 39.67 },
       { name: "Dar es Salaam", lat: -6.82, lng: 39.29 },
@@ -238,7 +250,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "west-africa",
     label: "West Africa",
-    baseCount: 22,
+    baseCount: 5,
     ports: [
       { name: "Lagos (Apapa)", lat: 6.45, lng: 3.37 },
       { name: "Abidjan", lat: 5.3, lng: -4.01 },
@@ -252,7 +264,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "russia",
     label: "Russia",
-    baseCount: 24,
+    baseCount: 6,
     ports: [
       { name: "St Petersburg", lat: 59.93, lng: 30.26 },
       { name: "Novorossiysk", lat: 44.72, lng: 37.77 },
@@ -264,7 +276,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "ukraine",
     label: "Ukraine",
-    baseCount: 48,
+    baseCount: 11,
     ports: [
       { name: "Odesa", lat: 46.48, lng: 30.73 },
       { name: "Mykolaiv", lat: 46.97, lng: 31.99 },
@@ -275,7 +287,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "turkey",
     label: "Turkey",
-    baseCount: 12,
+    baseCount: 3,
     ports: [
       { name: "Istanbul", lat: 41.01, lng: 28.98 },
       { name: "Izmir", lat: 38.42, lng: 27.14 },
@@ -286,7 +298,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "bangladesh",
     label: "Bangladesh",
-    baseCount: 12,
+    baseCount: 3,
     ports: [
       { name: "Chittagong", lat: 22.32, lng: 91.8 },
       { name: "Mongla", lat: 22.49, lng: 89.6 },
@@ -296,7 +308,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "poland",
     label: "Poland",
-    baseCount: 4,
+    baseCount: 1,
     ports: [
       { name: "Gdańsk", lat: 54.35, lng: 18.65 },
       { name: "Gdynia", lat: 54.53, lng: 18.55 },
@@ -305,7 +317,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "austria",
     label: "Austria",
-    baseCount: 2,
+    baseCount: 1,
     ports: [
       { name: "Trieste (transit)", lat: 45.65, lng: 13.78 },
       { name: "Koper (transit)", lat: 45.55, lng: 13.73 },
@@ -314,7 +326,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "thailand",
     label: "Thailand",
-    baseCount: 12,
+    baseCount: 3,
     ports: [
       { name: "Laem Chabang", lat: 13.08, lng: 100.88 },
       { name: "Bangkok", lat: 13.7, lng: 100.58 },
@@ -324,7 +336,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "indonesia",
     label: "Indonesia",
-    baseCount: 19,
+    baseCount: 4,
     ports: [
       { name: "Tanjung Priok", lat: -6.1, lng: 106.88 },
       { name: "Surabaya", lat: -7.2, lng: 112.73 },
@@ -335,7 +347,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "singapore",
     label: "Singapore",
-    baseCount: 18,
+    baseCount: 4,
     ports: [
       { name: "PSA Singapore", lat: 1.26, lng: 103.84 },
       { name: "Tuas", lat: 1.31, lng: 103.64 },
@@ -345,7 +357,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "malaysia",
     label: "Malaysia",
-    baseCount: 89,
+    baseCount: 20,
     ports: [
       { name: "Port Klang", lat: 3.0, lng: 101.39 },
       { name: "Tanjung Pelepas", lat: 1.37, lng: 103.55 },
@@ -360,7 +372,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "philippines",
     label: "Philippines",
-    baseCount: 8,
+    baseCount: 2,
     ports: [
       { name: "Manila", lat: 14.59, lng: 120.97 },
       { name: "Cebu", lat: 10.32, lng: 123.91 },
@@ -370,7 +382,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "myanmar",
     label: "Myanmar",
-    baseCount: 8,
+    baseCount: 2,
     ports: [
       { name: "Yangon", lat: 16.87, lng: 96.2 },
       { name: "Thilawa", lat: 16.63, lng: 96.25 },
@@ -379,7 +391,7 @@ const REGIONS: RegionConfig[] = [
   {
     key: "vietnam",
     label: "Vietnam",
-    baseCount: 8,
+    baseCount: 2,
     ports: [
       { name: "Ho Chi Minh (Cat Lai)", lat: 10.77, lng: 106.76 },
       { name: "Haiphong", lat: 20.86, lng: 106.68 },
@@ -404,16 +416,16 @@ export function getMsUntilNextWindow(timestamp = Date.now()): number {
   return TRAFFIC_WINDOW_MS - (timestamp % TRAFFIC_WINDOW_MS);
 }
 
-/** Adjust count ±2–5 from base each 4-hour window */
+/** Adjust count ±1 from base each 4-hour window — keeps fleet ~100–120 */
 export function getRegionCount(
   baseCount: number,
   window: number,
   regionKey: string,
 ): number {
   const rand = seededRandom(window * 7919 + regionKey.length * 997);
-  const delta = Math.floor(rand() * 4) + 2;
-  const sign = rand() > 0.48 ? 1 : -1;
-  return Math.max(Math.ceil(baseCount * 0.7), baseCount + sign * delta);
+  const delta = rand() > 0.55 ? 1 : 0;
+  const sign = rand() > 0.5 ? 1 : -1;
+  return Math.max(1, baseCount + sign * delta);
 }
 
 export function getVesselCountForWindow(window: number): number {
@@ -450,9 +462,28 @@ function vesselType(rand: () => number, cargo: string): VesselType {
   return rand() < 0.55 ? "container" : "reefer";
 }
 
+function formatIsoDate(baseMs: number, dayOffset: number): string {
+  const d = new Date(baseMs + dayOffset * 24 * 60 * 60 * 1000);
+  return d.toISOString().slice(0, 10);
+}
+
+function formatDateTimeLabel(isoDate: string): string {
+  const d = new Date(isoDate + "T12:00:00Z");
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export function formatVesselDate(isoDate: string): string {
+  return formatDateTimeLabel(isoDate);
+}
+
 export function generateVessels(window: number, tick = 0): Vessel[] {
   const vessels: Vessel[] = [];
   let globalIndex = 0;
+  const windowBaseMs = window * TRAFFIC_WINDOW_MS;
 
   for (const region of REGIONS) {
     const count = getRegionCount(region.baseCount, window, region.key);
@@ -460,6 +491,7 @@ export function generateVessels(window: number, tick = 0): Vessel[] {
 
     for (let i = 0; i < count; i++) {
       const port = region.ports[i % region.ports.length]!;
+      const destPort = region.ports[(i + 1) % region.ports.length] ?? port;
       const portRand = seededRandom(window + globalIndex * 17 + tick);
       const jitterLat = (portRand() - 0.5) * 1.2;
       const jitterLng = (portRand() - 0.5) * 1.4;
@@ -468,18 +500,39 @@ export function generateVessels(window: number, tick = 0): Vessel[] {
       const cargo = pick(portRand, FOOD_CARGO);
       const type = vesselType(portRand, cargo);
       const heading = portRand() * 360;
+      const etdOffset = -Math.floor(portRand() * 5);
+      const etaOffset = 3 + Math.floor(portRand() * 18);
+      const refSeq = String(100000 + ((window * 97 + globalIndex * 13) % 900000));
+      const status = vesselStatus(portRand);
+
+      const origin =
+        status === "import"
+          ? destPort.name
+          : port.name;
+      const destination =
+        status === "export"
+          ? destPort.name
+          : status === "import"
+            ? port.name
+            : destPort.name;
 
       vessels.push({
         id: `mfv-${region.key}-${window}-${i}`,
         name: `M Fresh ${type === "reefer" ? "Reefer" : type === "bulk" ? "Bulk" : "Cargo"} ${String(globalIndex + 1).padStart(3, "0")}`,
+        referenceNo: `MF-${refSeq}`,
         lat: port.lat + jitterLat + tickDrift,
         lng: port.lng + jitterLng + tickDriftLng,
         heading,
-        status: vesselStatus(portRand),
+        status,
         type,
         cargo,
         region: region.label,
         port: port.name,
+        origin,
+        destination,
+        etd: formatIsoDate(windowBaseMs, etdOffset),
+        eta: formatIsoDate(windowBaseMs, etaOffset),
+        imo: String(9000000 + ((window * 31 + globalIndex * 17) % 999999)),
         speedKnots: Math.round(8 + portRand() * 16),
       });
       globalIndex++;
@@ -487,6 +540,32 @@ export function generateVessels(window: number, tick = 0): Vessel[] {
   }
 
   return vessels;
+}
+
+/**
+ * Lookup a vessel by shipping reference, vessel name, or IMO.
+ * Ready to swap for a marine tracker API later.
+ */
+export function findVesselByReference(
+  query: string,
+  vessels: Vessel[],
+): Vessel | null {
+  const q = query.trim().toLowerCase();
+  if (!q) return null;
+
+  const normalized = q.replace(/\s+/g, "").replace(/^mf-?/i, "mf-");
+
+  return (
+    vessels.find(
+      (v) =>
+        v.referenceNo.toLowerCase() === q ||
+        v.referenceNo.toLowerCase().replace(/\s+/g, "") === normalized ||
+        v.name.toLowerCase() === q ||
+        v.name.toLowerCase().includes(q) ||
+        v.imo === q ||
+        v.id.toLowerCase() === q,
+    ) ?? null
+  );
 }
 
 export const STATUS_COLORS: Record<VesselStatus, string> = {

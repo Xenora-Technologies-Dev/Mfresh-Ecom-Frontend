@@ -62,7 +62,9 @@ export function CategoryDetailContent({ slug }: CategoryDetailContentProps) {
           </div>
         ) : (
           <>
-            <h2 className="mt-8 mb-4 text-lg font-semibold text-dark-gray">Products</h2>
+            <h2 className="mt-8 mb-4 text-lg font-semibold text-dark-gray">
+              Subcategories
+            </h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {subcategories.map((sub, i) => (
                 <SubcategoryImageCard

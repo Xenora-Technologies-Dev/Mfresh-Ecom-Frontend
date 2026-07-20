@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 import { ProductImageGallery } from "@/components/products/product-image-gallery";
 import { ProductFavoriteButton } from "@/components/products/product-favorite-button";
 import { ProductShareButton } from "@/components/products/product-share-button";
@@ -12,7 +13,6 @@ import { LoginRequiredModal } from "@/components/shared/login-required-modal";
 import { CountryFlagIcon } from "@/components/shared/country-flag-icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useBuyerAuthStore } from "@/store/buyer-auth-store";
 import { useCartStore } from "@/store/cart-store";
 import { toast } from "sonner";
 import {
@@ -69,8 +69,9 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
   const [loginOpen, setLoginOpen] = useState(false);
   const moq = Math.max(1, product.moq || 1);
   const [quantity, setQuantity] = useState(moq);
-  const isLoggedIn = useBuyerAuthStore((s) => s.isLoggedIn);
+  const { isSignedIn } = useAuth();
   const addItem = useCartStore((s) => s.addItem);
+  const openDrawer = useCartStore((s) => s.openDrawer);
 
   const specs = useMemo(
     () => parseProductSpecs(product.specifications),
@@ -80,7 +81,7 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
   const unavailable = product.soldOut || product.isActive === false;
 
   const handleAddToCart = () => {
-    if (!isLoggedIn()) {
+    if (!isSignedIn) {
       setLoginOpen(true);
       return;
     }
@@ -92,8 +93,10 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
       moqUnit: product.moqUnit,
       price: product.price,
       currency: product.currency,
+      image: product.image,
     });
     toast.success(`Added ${quantity} ${product.moqUnit} to cart`);
+    openDrawer();
   };
 
   return (

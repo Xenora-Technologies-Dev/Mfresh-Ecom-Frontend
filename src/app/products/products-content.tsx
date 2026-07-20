@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
@@ -17,7 +17,22 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { ProductFilters } from "@/types";
 
+function buildProductsUrl(filters: ProductFilters, categories: { id: string; slug: string; subcategories: { id: string; slug: string }[] }[]) {
+  const params = new URLSearchParams();
+  const cat = categories.find((c) => c.id === filters.category);
+  if (cat) {
+    params.set("category", cat.slug);
+    const sub = cat.subcategories.find((s) => s.id === filters.subCategory);
+    if (sub) params.set("subcategory", sub.slug);
+  }
+  if (filters.country) params.set("country", filters.country);
+  if (filters.search) params.set("q", filters.search);
+  const qs = params.toString();
+  return qs ? `/products?${qs}` : "/products";
+}
+
 export default function ProductsPageContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const categorySlug = searchParams.get("category");
   const subcategorySlug = searchParams.get("subcategory");
@@ -35,39 +50,61 @@ export default function ProductsPageContent() {
   });
 
   const activeCategory = useMemo(
-    () => categories.find((c) => c.slug === categorySlug),
-    [categories, categorySlug],
+    () => categories.find((c) => c.id === filters.category),
+    [categories, filters.category],
   );
 
   const activeSubcategory = useMemo(
     () =>
-      activeCategory?.subcategories.find((s) => s.slug === subcategorySlug),
-    [activeCategory, subcategorySlug],
+      activeCategory?.subcategories.find((s) => s.id === filters.subCategory),
+    [activeCategory, filters.subCategory],
   );
 
+  // Hydrate category/subcategory from URL whenever query params or categories change
   useEffect(() => {
-    if (activeCategory) {
-      setFilters((prev) => ({
-        ...prev,
-        category: activeCategory.id,
-        subCategory: activeSubcategory?.id,
-      }));
-    }
-  }, [activeCategory, activeSubcategory]);
+    if (!categories.length) return;
 
-  const resolvedFilters = useMemo(
-    () => ({
-      ...filters,
-      category: activeCategory?.id ?? filters.category,
-      subCategory: activeSubcategory?.id ?? filters.subCategory,
-    }),
-    [filters, activeCategory, activeSubcategory],
+    const cat = categorySlug
+      ? categories.find((c) => c.slug === categorySlug)
+      : undefined;
+    const sub =
+      cat && subcategorySlug
+        ? cat.subcategories.find((s) => s.slug === subcategorySlug)
+        : undefined;
+
+    const nextCategory = cat?.id;
+    const nextSub = sub?.id;
+
+    setFilters((prev) => {
+      if (prev.category === nextCategory && prev.subCategory === nextSub) {
+        return prev;
+      }
+      return {
+        ...prev,
+        category: nextCategory,
+        subCategory: nextSub,
+      };
+    });
+  }, [categories, categorySlug, subcategorySlug]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [categorySlug, subcategorySlug]);
+
+  const applyFilters = useCallback(
+    (next: ProductFilters, options?: { syncUrl?: boolean }) => {
+      setFilters(next);
+      setPage(1);
+      if (options?.syncUrl !== false) {
+        router.replace(buildProductsUrl(next, categories), { scroll: false });
+      }
+    },
+    [categories, router],
   );
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["products", resolvedFilters, page],
-    queryFn: () =>
-      getProductsPaginated({ ...resolvedFilters, page, limit: 12 }),
+    queryKey: ["products", filters, page],
+    queryFn: () => getProductsPaginated({ ...filters, page, limit: 12 }),
   });
 
   useEffect(() => {
@@ -82,15 +119,7 @@ export default function ProductsPageContent() {
   const meta = data?.meta;
 
   const handleReset = () => {
-    setFilters(
-      activeCategory
-        ? {
-            category: activeCategory.id,
-            subCategory: activeSubcategory?.id,
-          }
-        : {},
-    );
-    setPage(1);
+    applyFilters({});
   };
 
   const breadcrumbItems = useMemo((): BreadcrumbItem[] => {
@@ -104,9 +133,7 @@ export default function ProductsPageContent() {
     if (activeSubcategory) {
       items.push({
         label: activeSubcategory.name,
-        href: activeCategory
-          ? `/categories/${activeCategory.slug}?sub=${activeSubcategory.slug}`
-          : undefined,
+        href: `/products?category=${encodeURIComponent(activeCategory!.slug)}&subcategory=${encodeURIComponent(activeSubcategory.slug)}`,
       });
     } else if (!activeCategory) {
       items.push({ label: "Products", href: "/products" });
@@ -139,8 +166,7 @@ export default function ProductsPageContent() {
             <SearchBar
               defaultValue={filters.search ?? ""}
               onSearch={(q) => {
-                setFilters((prev) => ({ ...prev, search: q || undefined }));
-                setPage(1);
+                applyFilters({ ...filters, search: q || undefined });
               }}
             />
           </div>
@@ -203,11 +229,8 @@ export default function ProductsPageContent() {
             )}
           >
             <ProductFiltersPanel
-              filters={resolvedFilters}
-              onChange={(f) => {
-                setFilters(f);
-                setPage(1);
-              }}
+              filters={filters}
+              onChange={(f) => applyFilters(f)}
               onReset={handleReset}
             />
           </aside>

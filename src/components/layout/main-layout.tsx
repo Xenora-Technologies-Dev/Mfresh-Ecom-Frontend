@@ -1,20 +1,9 @@
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { PromoMessageBar } from "@/components/layout/promo-message-bar";
-import { CountryWelcomeBanner } from "@/components/layout/country-welcome-banner";
-import { GetStartedModal } from "@/components/layout/get-started-modal";
-import { FloatingWidgets } from "@/components/layout/floating-widgets";
+import { ConditionalChrome } from "@/components/layout/conditional-chrome";
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <PromoMessageBar />
-      <Header />
-      <CountryWelcomeBanner />
-      <GetStartedModal />
-      <main className="flex-1">{children}</main>
-      <Footer />
-      <FloatingWidgets />
+      <ConditionalChrome>{children}</ConditionalChrome>
     </div>
   );
 }

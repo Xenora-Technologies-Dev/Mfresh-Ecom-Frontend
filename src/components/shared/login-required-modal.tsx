@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { LogIn, UserPlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PORTAL_URL } from "@/lib/constants";
+import { useLoginModalStore } from "@/components/auth/login-modal";
 
 interface LoginRequiredModalProps {
   open: boolean;
   onClose: () => void;
+  onLoginClick?: () => void;
   title?: string;
   description?: string;
 }
@@ -15,13 +16,22 @@ interface LoginRequiredModalProps {
 export function LoginRequiredModal({
   open,
   onClose,
+  onLoginClick,
   title = "Login required",
   description = "Please log in or create a buyer account to add products to your cart.",
 }: LoginRequiredModalProps) {
+  const openLoginModal = useLoginModalStore((s) => s.openModal);
+
   if (!open) return null;
 
-  const loginUrl = `${PORTAL_URL}${PORTAL_URL.includes("?") ? "&" : "?"}role=buyer`;
-  const signupUrl = "/become-buyer";
+  const handleLogin = () => {
+    onClose();
+    if (onLoginClick) {
+      onLoginClick();
+    } else {
+      openLoginModal();
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
@@ -55,16 +65,14 @@ export function LoginRequiredModal({
         </div>
         <p className="mb-6 text-sm leading-relaxed text-muted">{description}</p>
         <div className="flex flex-col gap-2.5">
-          <Button size="lg" className="w-full gap-2" asChild>
-            <a href={loginUrl} target="_blank" rel="noopener noreferrer">
-              <LogIn className="h-4 w-4" />
-              Log in as Buyer
-            </a>
+          <Button size="lg" className="w-full gap-2" onClick={handleLogin}>
+            <LogIn className="h-4 w-4" />
+            Login
           </Button>
           <Button size="lg" variant="outline" className="w-full gap-2" asChild>
-            <Link href={signupUrl} onClick={onClose}>
+            <Link href="/sign-up?role=buyer" onClick={onClose}>
               <UserPlus className="h-4 w-4" />
-              Sign up as Buyer
+              Sign up
             </Link>
           </Button>
           <Button variant="ghost" className="w-full" onClick={onClose}>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import { MainLayout } from "@/components/layout/main-layout";
 import { QueryProvider } from "@/providers/query-provider";
 import { ToastProvider } from "@/providers/toast-provider";
@@ -23,6 +24,11 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 /** Pre-hydration cover — CSS only, never removed from the DOM by JS */
@@ -59,16 +65,18 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col font-sans antialiased text-dark-gray bg-fresh-mint">
-        <QueryProvider>
-          <ToastProvider />
-          <CurrencyRatesProvider>
-            <BootProvider>
-              <ThemeProvider initialTheme={initialTheme}>
-                <MainLayout>{children}</MainLayout>
-              </ThemeProvider>
-            </BootProvider>
-          </CurrencyRatesProvider>
-        </QueryProvider>
+        <ClerkProvider>
+          <QueryProvider>
+            <ToastProvider />
+            <CurrencyRatesProvider>
+              <BootProvider>
+                <ThemeProvider initialTheme={initialTheme}>
+                  <MainLayout>{children}</MainLayout>
+                </ThemeProvider>
+              </BootProvider>
+            </CurrencyRatesProvider>
+          </QueryProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

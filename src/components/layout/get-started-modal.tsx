@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { PackageSearch, Truck, X } from "lucide-react";
-import { PORTAL_URL } from "@/lib/constants";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { PackageSearch, Truck, X, ArrowRight } from "lucide-react";
 import { DEFAULT_LOGO_PATH } from "@/lib/theme";
+import { cn } from "@/lib/utils";
 
 /**
  * In-memory only — survives client navigations within this tab load,
@@ -13,10 +14,39 @@ import { DEFAULT_LOGO_PATH } from "@/lib/theme";
  */
 let shownThisPageLoad = false;
 
-const TITLE_CHARS = Array.from("Welcome to MFresh.ae");
+type Role = "buyer" | "seller";
+
+const ROLE_COPY: Record<
+  Role,
+  {
+    label: string;
+    tagline: string;
+    description: string;
+    cta: string;
+    Icon: typeof PackageSearch;
+  }
+> = {
+  buyer: {
+    label: "Buyer",
+    tagline: "I need wholesale supply",
+    description:
+      "Source quality food for your restaurants, retail, or distribution network.",
+    cta: "Continue as buyer",
+    Icon: PackageSearch,
+  },
+  seller: {
+    label: "Seller",
+    tagline: "I offer products to trade",
+    description:
+      "Reach buyers worldwide with verified listings and reliable fulfilment.",
+    cta: "Continue as seller",
+    Icon: Truck,
+  },
+};
 
 export function GetStartedModal() {
   const [open, setOpen] = useState(false);
+  const [role, setRole] = useState<Role>("buyer");
 
   useEffect(() => {
     if (shownThisPageLoad) return;
@@ -28,6 +58,8 @@ export function GetStartedModal() {
   }, []);
 
   const dismiss = () => setOpen(false);
+  const copy = ROLE_COPY[role];
+  const Icon = copy.Icon;
 
   if (!open) return null;
 
@@ -46,23 +78,28 @@ export function GetStartedModal() {
       />
 
       <motion.div
-        initial={{ opacity: 0, y: 18, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 26 }}
-        className="relative z-10 flex max-h-[min(92dvh,720px)] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl shadow-black/25 sm:rounded-2xl"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 320, damping: 28 }}
+        className="relative z-10 w-full max-w-md overflow-hidden rounded-t-3xl bg-white shadow-2xl shadow-black/25 sm:rounded-3xl"
       >
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/10 via-secondary/5 to-transparent"
+          aria-hidden
+        />
+
         <button
           type="button"
           onClick={dismiss}
-          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-muted shadow-sm ring-1 ring-border transition hover:bg-light-gray hover:text-dark-gray sm:h-9 sm:w-9 sm:bg-transparent sm:shadow-none sm:ring-0"
+          className="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-muted shadow-sm ring-1 ring-border transition hover:bg-light-gray hover:text-dark-gray sm:h-9 sm:w-9"
           aria-label="Close"
         >
           <X className="h-5 w-5" strokeWidth={2} />
         </button>
 
-        <div className="overflow-y-auto overscroll-contain px-4 pb-5 pt-6 sm:px-8 sm:pb-8 sm:pt-8">
-          <div className="mx-auto mb-4 flex justify-center sm:mb-5">
-            <span className="relative h-8 w-[116px] sm:h-10 sm:w-[148px]">
+        <div className="relative px-5 pb-6 pt-7 sm:px-7 sm:pb-8 sm:pt-8">
+          <div className="mx-auto mb-4 flex justify-center">
+            <span className="relative h-8 w-[116px] sm:h-9 sm:w-[132px]">
               <Image
                 src={DEFAULT_LOGO_PATH}
                 alt="M Fresh"
@@ -76,85 +113,113 @@ export function GetStartedModal() {
 
           <h2
             id="get-started-title"
-            className="text-center text-lg font-bold tracking-tight text-dark-gray xs:text-xl sm:text-2xl"
-            aria-label="Welcome to MFresh.ae"
+            className="text-center text-xl font-bold tracking-tight text-dark-gray sm:text-2xl"
           >
-            <span className="inline">
-              {TITLE_CHARS.map((ch, i) => {
-                const brandStart = "Welcome to ".length;
-                const isBrand = i >= brandStart;
-                return (
-                  <motion.span
-                    key={`${ch}-${i}`}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: 0.12 + i * 0.045,
-                      duration: 0.28,
-                      ease: "easeOut",
-                    }}
-                    className={
-                      isBrand ? "inline text-primary" : "inline"
-                    }
-                  >
-                    {ch === " " ? "\u00A0" : ch}
-                  </motion.span>
-                );
-              })}
-            </span>
+            Welcome to{" "}
+            <span className="text-primary">MFresh.ae</span>
           </h2>
+          <p className="mt-2 text-center text-sm text-muted">
+            How would you like to get started?
+          </p>
 
-          <div className="mt-5 grid items-stretch gap-3 sm:mt-7 sm:grid-cols-2 sm:gap-5">
-            <a
-              href={`${PORTAL_URL}?role=buyer`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={dismiss}
-              className="group flex h-full min-h-0 flex-col rounded-xl bg-secondary-muted/90 px-4 py-4 text-center transition hover:-translate-y-0.5 hover:shadow-md sm:min-h-[280px] sm:px-5 sm:py-6 sm:text-left"
-            >
-              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-secondary/15 text-secondary sm:mx-0 sm:h-12 sm:w-12">
-                <PackageSearch className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
-              </span>
-              <span className="mt-3 text-base font-bold text-secondary sm:mt-4 sm:text-lg">
-                Buyer
-              </span>
-              <span className="mt-0.5 text-xs text-muted sm:mt-1 sm:text-sm">
-                I need wholesale supply
-              </span>
-              <p className="mt-2 hidden flex-1 text-sm leading-relaxed text-dark-gray/80 sm:mt-3 sm:block">
-                Source quality food for your restaurants, retail, or distribution
-                network.
-              </p>
-              <span className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-lg bg-secondary text-sm font-semibold text-white transition group-hover:bg-secondary-dark sm:mt-auto sm:h-11">
-                I am a buyer
-              </span>
-            </a>
-
-            <a
-              href={`${PORTAL_URL}?role=seller`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={dismiss}
-              className="group flex h-full min-h-0 flex-col rounded-xl bg-primary-muted px-4 py-4 text-center transition hover:-translate-y-0.5 hover:shadow-md sm:min-h-[280px] sm:px-5 sm:py-6 sm:text-left"
-            >
-              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-primary/15 text-primary sm:mx-0 sm:h-12 sm:w-12">
-                <Truck className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={2} />
-              </span>
-              <span className="mt-3 text-base font-bold text-primary sm:mt-4 sm:text-lg">
-                Seller
-              </span>
-              <span className="mt-0.5 text-xs text-muted sm:mt-1 sm:text-sm">
-                I offer products to trade
-              </span>
-              <p className="mt-2 hidden flex-1 text-sm leading-relaxed text-dark-gray/80 sm:mt-3 sm:block">
-                Reach buyers worldwide with verified listings and reliable
-                fulfilment.
-              </p>
-              <span className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-lg bg-primary text-sm font-semibold text-white transition group-hover:bg-primary-dark sm:mt-auto sm:h-11">
-                I am a seller
-              </span>
-            </a>
+          {/* Segmented role picker */}
+          <div
+            className="mt-6 grid grid-cols-2 gap-1 rounded-2xl bg-light-gray p-1"
+            role="tablist"
+            aria-label="Choose role"
+          >
+            {(["buyer", "seller"] as const).map((option) => {
+              const active = role === option;
+              const OptionIcon = ROLE_COPY[option].Icon;
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setRole(option)}
+                  className={cn(
+                    "relative flex items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold transition-colors",
+                    active
+                      ? option === "buyer"
+                        ? "bg-secondary text-white shadow-sm"
+                        : "bg-primary text-white shadow-sm"
+                      : "text-muted hover:text-dark-gray",
+                  )}
+                >
+                  <OptionIcon className="h-4 w-4 shrink-0" strokeWidth={2} />
+                  {ROLE_COPY[option].label}
+                </button>
+              );
+            })}
           </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={role}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2 }}
+              className="mt-5"
+            >
+              <div
+                className={cn(
+                  "rounded-2xl px-4 py-4 sm:px-5 sm:py-5",
+                  role === "buyer" ? "bg-secondary-muted/80" : "bg-primary-muted",
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <span
+                    className={cn(
+                      "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl",
+                      role === "buyer"
+                        ? "bg-secondary/15 text-secondary"
+                        : "bg-primary/15 text-primary",
+                    )}
+                  >
+                    <Icon className="h-5 w-5" strokeWidth={2} />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={cn(
+                        "text-base font-bold",
+                        role === "buyer" ? "text-secondary" : "text-primary",
+                      )}
+                    >
+                      {copy.label}
+                    </p>
+                    <p className="mt-0.5 text-sm text-muted">{copy.tagline}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-dark-gray/80">
+                      {copy.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                href={`/sign-up?role=${role}`}
+                onClick={dismiss}
+                className={cn(
+                  "mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-semibold text-white transition",
+                  role === "buyer"
+                    ? "bg-secondary hover:bg-secondary-dark"
+                    : "bg-primary hover:bg-primary-dark",
+                )}
+              >
+                {copy.cta}
+                <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+              </Link>
+            </motion.div>
+          </AnimatePresence>
+
+          <button
+            type="button"
+            onClick={dismiss}
+            className="mt-3 w-full py-2 text-center text-sm text-muted transition hover:text-dark-gray"
+          >
+            Browse as guest
+          </button>
         </div>
       </motion.div>
     </div>

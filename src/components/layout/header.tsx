@@ -2,14 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, LogIn, Menu, X } from "lucide-react";
+import { Heart, LogIn, Menu, ShoppingCart, X } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser, UserButton } from "@clerk/nextjs";
 import { HeaderSearchBar, Logo, SearchBar } from "@/components/layout/search-bar";
 import { LocationSelector } from "@/components/layout/location-selector";
 import { CurrencySwitcher } from "@/components/shared/currency-switcher";
-import { NAV_LINKS, PORTAL_URL } from "@/lib/constants";
+import { LoginModal, useLoginModalStore } from "@/components/auth/login-modal";
+import { CartDrawer } from "@/components/cart/cart-drawer";
+import { NAV_LINKS } from "@/lib/constants";
+import { getDashboardPath, parsePortalRole } from "@/lib/auth/roles";
 import { useFavoritesStore } from "@/store/favorites-store";
+import { useCartStore } from "@/store/cart-store";
 import { cn } from "@/lib/utils";
 
 function HeaderLocationSelector() {
@@ -18,10 +23,6 @@ function HeaderLocationSelector() {
       <LocationSelector />
     </Suspense>
   );
-}
-
-function portalLoginUrl() {
-  return PORTAL_URL;
 }
 
 function isNavActive(pathname: string, href: string) {
@@ -34,6 +35,16 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const favoritesCount = useFavoritesStore((s) => s.favorites.length);
   const hideHeaderSearch = pathname === "/products";
+
+  const { isLoaded, isSignedIn, user } = useUser();
+  const openLoginModal = useLoginModalStore((s) => s.openModal);
+  const cartCount = useCartStore((s) => s.items.length);
+  const openCartDrawer = useCartStore((s) => s.openDrawer);
+
+  const publicMeta = (user?.publicMetadata ?? {}) as Record<string, unknown>;
+  const portalRole = parsePortalRole(publicMeta.portalRole) ?? "buyer";
+  const dashboardPath = getDashboardPath(portalRole);
+  const signedIn = isLoaded && isSignedIn;
 
   useEffect(() => {
     setMobileOpen(false);
@@ -69,31 +80,60 @@ export function Header() {
               )}
             </Link>
 
+            {signedIn && (
+              <button
+                type="button"
+                onClick={openCartDrawer}
+                aria-label="Cart"
+                className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-muted text-primary transition-colors hover:bg-primary/15"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white">
+                    {cartCount > 9 ? "9+" : cartCount}
+                  </span>
+                )}
+              </button>
+            )}
+
             <div className="ml-1 hidden h-8 w-px bg-border lg:block" />
 
-            <a
-              href={portalLoginUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-secondary px-4 text-sm font-semibold text-white transition-colors hover:bg-secondary-dark lg:px-5"
-            >
-              <LogIn className="h-4 w-4 shrink-0" />
-              Log In
-            </a>
+            {signedIn ? (
+              <>
+                <Link
+                  href={dashboardPath}
+                  className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-secondary px-4 text-sm font-semibold text-white transition-colors hover:bg-secondary-dark lg:px-5"
+                >
+                  Dashboard
+                </Link>
+                <UserButton />
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={openLoginModal}
+                  className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-secondary px-4 text-sm font-semibold text-white transition-colors hover:bg-secondary-dark lg:px-5"
+                >
+                  <LogIn className="h-4 w-4 shrink-0" />
+                  Log In
+                </button>
 
-            <Link
-              href="/become-buyer"
-              className="hidden h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-primary/30 px-3.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/5 lg:inline-flex xl:px-4 xl:text-sm"
-            >
-              Register as Buyer
-            </Link>
+                <Link
+                  href="/sign-up?role=buyer"
+                  className="hidden h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-primary/30 px-3.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/5 lg:inline-flex xl:px-4 xl:text-sm"
+                >
+                  Register as Buyer
+                </Link>
 
-            <Link
-              href="/become-seller"
-              className="hidden h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-secondary/30 px-3.5 text-xs font-semibold text-secondary transition-colors hover:bg-secondary/5 lg:inline-flex xl:px-4 xl:text-sm"
-            >
-              Register as Seller
-            </Link>
+                <Link
+                  href="/sign-up?role=seller"
+                  className="hidden h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-lg border border-secondary/30 px-3.5 text-xs font-semibold text-secondary transition-colors hover:bg-secondary/5 lg:inline-flex xl:px-4 xl:text-sm"
+                >
+                  Register as Seller
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -126,21 +166,23 @@ export function Header() {
                 </Link>
               ))}
             </div>
-            <div className="ml-1 hidden shrink-0 items-center gap-2 border-l border-border pl-3 md:flex lg:hidden">
-              <Link
-                href="/become-buyer"
-                className="whitespace-nowrap text-xs font-semibold text-primary hover:underline"
-              >
-                Register as Buyer
-              </Link>
-              <span className="text-border">|</span>
-              <Link
-                href="/become-seller"
-                className="whitespace-nowrap text-xs font-semibold text-secondary hover:underline"
-              >
-                Register as Seller
-              </Link>
-            </div>
+            {!signedIn && (
+              <div className="ml-1 hidden shrink-0 items-center gap-2 border-l border-border pl-3 md:flex lg:hidden">
+                <Link
+                  href="/sign-up?role=buyer"
+                  className="whitespace-nowrap text-xs font-semibold text-primary hover:underline"
+                >
+                  Register as Buyer
+                </Link>
+                <span className="text-border">|</span>
+                <Link
+                  href="/sign-up?role=seller"
+                  className="whitespace-nowrap text-xs font-semibold text-secondary hover:underline"
+                >
+                  Register as Seller
+                </Link>
+              </div>
+            )}
           </nav>
         </div>
       </div>
@@ -160,43 +202,73 @@ export function Header() {
                   <HeaderLocationSelector />
                   <CurrencySwitcher compact />
                 </div>
-                <Link
-                  href="/wishlist"
-                  aria-label="Wishlist"
-                  className="relative flex h-10 w-10 items-center justify-center rounded-full bg-secondary-muted text-secondary"
-                >
-                  <Heart className="h-5 w-5" />
-                  {favoritesCount > 0 && (
-                    <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-[9px] font-bold text-white">
-                      {favoritesCount > 9 ? "9+" : favoritesCount}
-                    </span>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/wishlist"
+                    aria-label="Wishlist"
+                    className="relative flex h-10 w-10 items-center justify-center rounded-full bg-secondary-muted text-secondary"
+                  >
+                    <Heart className="h-5 w-5" />
+                    {favoritesCount > 0 && (
+                      <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-[9px] font-bold text-white">
+                        {favoritesCount > 9 ? "9+" : favoritesCount}
+                      </span>
+                    )}
+                  </Link>
+                  {signedIn && (
+                    <button
+                      type="button"
+                      onClick={openCartDrawer}
+                      aria-label="Cart"
+                      className="relative flex h-10 w-10 items-center justify-center rounded-full bg-primary-muted text-primary"
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      {cartCount > 0 && (
+                        <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white">
+                          {cartCount > 9 ? "9+" : cartCount}
+                        </span>
+                      )}
+                    </button>
                   )}
-                </Link>
+                </div>
               </div>
               <div className="flex flex-col gap-2">
-                <a
-                  href={portalLoginUrl()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-secondary text-sm font-semibold text-white"
-                >
-                  <LogIn className="h-4 w-4" />
-                  Log In
-                </a>
-                <div className="grid grid-cols-2 gap-2">
-                  <Link
-                    href="/become-buyer"
-                    className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-lg border border-primary/25 bg-primary/5 text-xs font-semibold text-primary"
-                  >
-                    Register as Buyer
-                  </Link>
-                  <Link
-                    href="/become-seller"
-                    className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-lg border border-secondary/25 bg-secondary/5 text-xs font-semibold text-secondary"
-                  >
-                    Register as Seller
-                  </Link>
-                </div>
+                {signedIn ? (
+                  <div className="flex items-center gap-3 rounded-lg border border-border p-3">
+                    <UserButton />
+                    <Link
+                      href={dashboardPath}
+                      className="flex-1 text-sm font-semibold text-secondary hover:underline"
+                    >
+                      Go to Dashboard
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={openLoginModal}
+                      className="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-secondary text-sm font-semibold text-white"
+                    >
+                      <LogIn className="h-4 w-4" />
+                      Log In
+                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link
+                        href="/sign-up?role=buyer"
+                        className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-lg border border-primary/25 bg-primary/5 text-xs font-semibold text-primary"
+                      >
+                        Register as Buyer
+                      </Link>
+                      <Link
+                        href="/sign-up?role=seller"
+                        className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-lg border border-secondary/25 bg-secondary/5 text-xs font-semibold text-secondary"
+                      >
+                        Register as Seller
+                      </Link>
+                    </div>
+                  </>
+                )}
               </div>
               <nav className="flex flex-col gap-1 border-t border-border pt-3">
                 {NAV_LINKS.map((link) => (
@@ -218,6 +290,9 @@ export function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <LoginModal />
+      <CartDrawer />
     </header>
   );
 }

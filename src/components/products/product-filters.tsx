@@ -148,24 +148,36 @@ export function ProductFiltersPanel({
           <Input
             type="number"
             placeholder="Min"
-            value={filters.minPrice ?? ""}
-            onChange={(e) =>
+            value={
+              filters.minPrice != null
+                ? Math.round(convertFromUsd(filters.minPrice, currency, rates))
+                : ""
+            }
+            onChange={(e) => {
+              const raw = e.target.value ? Number(e.target.value) : undefined;
               onChange({
                 ...filters,
-                minPrice: e.target.value ? Number(e.target.value) : undefined,
-              })
-            }
+                minPrice:
+                  raw != null ? toUsdAmount(raw, currency, rates) : undefined,
+              });
+            }}
           />
           <Input
             type="number"
             placeholder="Max"
-            value={filters.maxPrice ?? ""}
-            onChange={(e) =>
+            value={
+              filters.maxPrice != null
+                ? Math.round(convertFromUsd(filters.maxPrice, currency, rates))
+                : ""
+            }
+            onChange={(e) => {
+              const raw = e.target.value ? Number(e.target.value) : undefined;
               onChange({
                 ...filters,
-                maxPrice: e.target.value ? Number(e.target.value) : undefined,
-              })
-            }
+                maxPrice:
+                  raw != null ? toUsdAmount(raw, currency, rates) : undefined,
+              });
+            }}
           />
         </div>
       </div>

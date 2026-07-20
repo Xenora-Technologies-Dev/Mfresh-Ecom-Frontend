@@ -61,10 +61,10 @@ export const FOOTER_LINKS = {
     { href: "/terms", label: "Terms of Service" },
   ],
   join: [
-    { href: "/become-buyer", label: "Become a Buyer" },
-    { href: "/become-seller", label: "Become a Seller" },
-    { href: `${PORTAL_URL}?role=buyer`, label: "Buyer Portal" },
-    { href: `${PORTAL_URL}?role=seller`, label: "Seller Portal" },
+    { href: "/sign-up?role=buyer", label: "Become a Buyer" },
+    { href: "/sign-up?role=seller", label: "Become a Seller" },
+    { href: "/buyer", label: "Buyer Portal" },
+    { href: "/seller", label: "Seller Portal" },
   ],
 } as const;
 

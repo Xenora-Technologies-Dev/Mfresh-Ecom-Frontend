@@ -80,3 +80,41 @@ export async function api<T>(endpoint: string, options?: RequestInit): Promise<T
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
+
+export interface UploadedImageResult {
+  id: string;
+  type: string;
+  urls: {
+    display: string;
+    thumbnail: string;
+    medium: string;
+    large: string;
+  };
+}
+
+export async function uploadImage(
+  file: File,
+  type: "MAIN" | "SUB" | "DISPLAY" = "MAIN",
+  preview = true,
+): Promise<UploadedImageResult> {
+  const form = new FormData();
+  form.append("file", file);
+  const endpoint = preview
+    ? `/images/preview?type=${type}`
+    : `/images/upload?type=${type}`;
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    method: "POST",
+    body: form,
+  });
+  if (!res.ok) {
+    let message = res.statusText;
+    try {
+      const body = await res.json();
+      message = body.message ?? message;
+    } catch {
+      message = await res.text().catch(() => message);
+    }
+    throw new ApiError(message, res.status);
+  }
+  return res.json() as Promise<UploadedImageResult>;
+}
