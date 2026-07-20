@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -37,6 +37,18 @@ const roles: {
   },
 ];
 
+function isAlreadyVerifiedError(error: { message?: string; code?: string } | null | undefined) {
+  if (!error) return false;
+  const code = (error.code ?? "").toLowerCase();
+  const message = (error.message ?? "").toLowerCase();
+  return (
+    code.includes("already_verified") ||
+    code.includes("verification_already") ||
+    message.includes("already been verified") ||
+    message.includes("already verified")
+  );
+}
+
 function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -57,6 +69,8 @@ function SignUpForm() {
   const [code, setCode] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
   const [error, setError] = useState("");
+  const [legalAccepted, setLegalAccepted] = useState(true);
+  const finalizingRef = useRef(false);
 
   const loading = fetchStatus === "fetching";
 
@@ -68,27 +82,86 @@ function SignUpForm() {
     };
   };
 
-  const finishSignUp = async () => {
-    if (signUp.status !== "complete") {
-      setError("Sign up is not complete yet. Please verify your email.");
+  const navigateAfterSignUp = useCallback(
+    (decorateUrl: (url: string) => string) => {
+      const url = decorateUrl("/onboarding");
+      if (url.startsWith("http")) {
+        window.location.href = url;
+      } else {
+        router.push(url);
+      }
+    },
+    [router],
+  );
+
+  /**
+   * Satisfy remaining Clerk requirements (e.g. legal_accepted), then activate the session.
+   * SignUpFuture mutates in place after each API call — always read status/missingFields after awaits.
+   */
+  const finishSignUp = useCallback(async () => {
+    if (finalizingRef.current) return;
+    finalizingRef.current = true;
+    setError("");
+
+    try {
+      // Email verified but Clerk still needs required fields (commonly legal_accepted).
+      if (signUp.status === "missing_requirements") {
+        const missing = [...(signUp.missingFields ?? [])];
+
+        if (missing.includes("legal_accepted")) {
+          const { error: legalError } = await signUp.update({ legalAccepted: true });
+          if (legalError) {
+            setError(legalError.message || "Please accept the terms to continue.");
+            return;
+          }
+        }
+
+        if (
+          signUp.status === "missing_requirements" &&
+          (signUp.missingFields?.length ?? 0) > 0
+        ) {
+          setError(
+            `Additional information required: ${signUp.missingFields.join(", ").replaceAll("_", " ")}.`,
+          );
+          return;
+        }
+      }
+
+      if (signUp.status !== "complete") {
+        setError(
+          `Sign-up is not complete yet${
+            signUp.missingFields?.length
+              ? ` (missing: ${signUp.missingFields.join(", ").replaceAll("_", " ")})`
+              : signUp.unverifiedFields?.length
+                ? ` (unverified: ${signUp.unverifiedFields.join(", ").replaceAll("_", " ")})`
+                : ""
+          }.`,
+        );
+        return;
+      }
+
+      const { error: finalizeError } = await signUp.finalize({
+        navigate: ({ decorateUrl }) => navigateAfterSignUp(decorateUrl),
+      });
+
+      if (finalizeError) {
+        setError(finalizeError.message || "Could not activate your session.");
+      }
+    } finally {
+      finalizingRef.current = false;
+    }
+  }, [navigateAfterSignUp, signUp]);
+
+  // If Clerk marks the attempt complete (e.g. after verify), activate the session.
+  useEffect(() => {
+    if (isSignedIn) {
+      router.replace("/onboarding");
       return;
     }
-
-    const { error: finalizeError } = await signUp.finalize({
-      navigate: ({ decorateUrl }) => {
-        const url = decorateUrl("/onboarding");
-        if (url.startsWith("http")) {
-          window.location.href = url;
-        } else {
-          router.push(url);
-        }
-      },
-    });
-
-    if (finalizeError) {
-      setError(finalizeError.message || "Could not activate your session.");
+    if (signUp.status === "complete" && !finalizingRef.current) {
+      void finishSignUp();
     }
-  };
+  }, [finishSignUp, isSignedIn, router, signUp.status]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +175,10 @@ function SignUpForm() {
       setError("Country is required.");
       return;
     }
+    if (!legalAccepted) {
+      setError("Please accept the Terms of Service and Privacy Policy.");
+      return;
+    }
 
     const { firstName, lastName } = splitName(name);
 
@@ -110,6 +187,7 @@ function SignUpForm() {
       password,
       firstName,
       lastName,
+      legalAccepted: true,
       unsafeMetadata: {
         portalRole,
         organizationName: organizationName.trim(),
@@ -128,13 +206,19 @@ function SignUpForm() {
       return;
     }
 
-    const { error: sendError } = await signUp.verifications.sendEmailCode();
-    if (sendError) {
-      setError(sendError.message || "Could not send verification code.");
+    // Still need email verification — or other missing fields.
+    if (signUp.unverifiedFields.includes("email_address")) {
+      const { error: sendError } = await signUp.verifications.sendEmailCode();
+      if (sendError) {
+        setError(sendError.message || "Could not send verification code.");
+        return;
+      }
+      setPendingVerification(true);
       return;
     }
 
-    setPendingVerification(true);
+    // No email left to verify — try to finish (e.g. only legal was missing and already set).
+    await finishSignUp();
   };
 
   const handleVerify = async (e: React.FormEvent) => {
@@ -145,7 +229,8 @@ function SignUpForm() {
       code: code.trim(),
     });
 
-    if (verifyError) {
+    // Code already consumed on a prior attempt — continue to finalize instead of blocking.
+    if (verifyError && !isAlreadyVerifiedError(verifyError)) {
       setError(verifyError.message || "Invalid verification code.");
       return;
     }
@@ -153,7 +238,13 @@ function SignUpForm() {
     await finishSignUp();
   };
 
-  if (signUp.status === "complete" || isSignedIn) {
+  const needsEmailCode =
+    pendingVerification ||
+    (signUp.status === "missing_requirements" &&
+      signUp.unverifiedFields.includes("email_address"));
+
+  // Show spinner only while we are actively finalizing / redirecting.
+  if (isSignedIn) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -166,11 +257,6 @@ function SignUpForm() {
     errors.fields.password?.message ||
     errors.fields.code?.message ||
     error;
-
-  const needsEmailCode =
-    pendingVerification ||
-    (signUp.status === "missing_requirements" &&
-      signUp.unverifiedFields.includes("email_address"));
 
   return (
     <div className="flex min-h-screen">
@@ -329,6 +415,26 @@ function SignUpForm() {
                   />
                 </div>
               </div>
+
+              <label className="flex items-start gap-2 text-xs text-muted">
+                <input
+                  type="checkbox"
+                  checked={legalAccepted}
+                  onChange={(e) => setLegalAccepted(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-border"
+                />
+                <span>
+                  I agree to the{" "}
+                  <Link href="/terms" className="font-medium text-primary hover:underline">
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/privacy" className="font-medium text-primary hover:underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </span>
+              </label>
 
               {/* Clerk bot protection widget mount point */}
               <div id="clerk-captcha" />
