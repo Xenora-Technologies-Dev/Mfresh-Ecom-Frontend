@@ -5,7 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth, useSignUp } from "@clerk/nextjs";
-import { Building2, Mail, Lock, User, Phone, ShoppingBag, Store, ArrowRight } from "lucide-react";
+import {
+  AtSign,
+  Building2,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  ShoppingBag,
+  Store,
+  ArrowRight,
+} from "lucide-react";
 import { AuthBrandPanel } from "@/components/auth/auth-brand-panel";
 import { CountrySelect } from "@/components/auth/country-select";
 import { Button } from "@/components/ui/button";
@@ -61,6 +71,7 @@ function SignUpForm() {
     preselectedRole && preselectedRole !== "admin" ? preselectedRole : "buyer",
   );
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [organizationName, setOrganizationName] = useState("");
@@ -104,14 +115,22 @@ function SignUpForm() {
     setError("");
 
     try {
-      // Email verified but Clerk still needs required fields (commonly legal_accepted).
+      // Email verified but Clerk still needs required fields (username, legal_accepted, …).
       if (signUp.status === "missing_requirements") {
         const missing = [...(signUp.missingFields ?? [])];
+        const patch: { legalAccepted?: boolean; username?: string } = {};
 
         if (missing.includes("legal_accepted")) {
-          const { error: legalError } = await signUp.update({ legalAccepted: true });
-          if (legalError) {
-            setError(legalError.message || "Please accept the terms to continue.");
+          patch.legalAccepted = true;
+        }
+        if (missing.includes("username") && username.trim()) {
+          patch.username = username.trim();
+        }
+
+        if (Object.keys(patch).length > 0) {
+          const { error: updateError } = await signUp.update(patch);
+          if (updateError) {
+            setError(updateError.message || "Could not complete required account fields.");
             return;
           }
         }
@@ -150,7 +169,7 @@ function SignUpForm() {
     } finally {
       finalizingRef.current = false;
     }
-  }, [navigateAfterSignUp, signUp]);
+  }, [navigateAfterSignUp, signUp, username]);
 
   // If Clerk marks the attempt complete (e.g. after verify), activate the session.
   useEffect(() => {
@@ -175,6 +194,10 @@ function SignUpForm() {
       setError("Country is required.");
       return;
     }
+    if (!username.trim()) {
+      setError("Username is required.");
+      return;
+    }
     if (!legalAccepted) {
       setError("Please accept the Terms of Service and Privacy Policy.");
       return;
@@ -185,6 +208,7 @@ function SignUpForm() {
     const { error: createError } = await signUp.password({
       emailAddress: email.trim(),
       password,
+      username: username.trim(),
       firstName,
       lastName,
       legalAccepted: true,
@@ -254,6 +278,7 @@ function SignUpForm() {
 
   const fieldError =
     errors.fields.emailAddress?.message ||
+    errors.fields.username?.message ||
     errors.fields.password?.message ||
     errors.fields.code?.message ||
     error;
@@ -381,6 +406,30 @@ function SignUpForm() {
                     required
                   />
                 </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="username">Username</Label>
+                <div className="relative">
+                  <AtSign className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                  <Input
+                    id="username"
+                    name="username"
+                    autoComplete="username"
+                    placeholder="yourusername"
+                    value={username}
+                    onChange={(e) =>
+                      setUsername(e.target.value.replace(/\s+/g, "").toLowerCase())
+                    }
+                    className="pl-10"
+                    required
+                    minLength={3}
+                    maxLength={64}
+                  />
+                </div>
+                <p className="text-xs text-muted">
+                  Letters, numbers, and underscores. Used to sign in with Clerk.
+                </p>
               </div>
 
               <div className="space-y-1.5">
