@@ -13,7 +13,7 @@ const BANNER_SLIDE_MS = 5_500;
 
 export function HeroBanner() {
   const { markHeroReady } = useBoot();
-  const { data: banners = [], isFetched } = useQuery({
+  const { data: banners = [], isFetched, isError } = useQuery({
     queryKey: ["banners", "hero"],
     queryFn: getHeroBanners,
     staleTime: 60 * 1000,
@@ -27,10 +27,19 @@ export function HeroBanner() {
   const hasBanners = banners.length > 0;
 
   useEffect(() => {
-    if (!isFetched) return;
+    if (!isFetched && !isError) return;
     setHeroReady(true);
     markHeroReady();
-  }, [isFetched, markHeroReady]);
+  }, [isFetched, isError, markHeroReady]);
+
+  // Don't leave the first home paint waiting on a hung banner request.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setHeroReady(true);
+      markHeroReady();
+    }, 3_000);
+    return () => window.clearTimeout(timer);
+  }, [markHeroReady]);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");

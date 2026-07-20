@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { usePathname } from "next/navigation";
@@ -27,23 +26,20 @@ const BootContext = createContext<BootContextValue>({
   markHeroReady: () => {},
 });
 
+/** Failsafe so a hung theme/banner fetch never blocks the storefront forever. */
+const BOOT_TIMEOUT_MS = 4_000;
+
 export function BootProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const prevPathRef = useRef(pathname);
-  const [themeReady, setThemeReady] = useState(false);
-  const [heroReady, setHeroReady] = useState(!isHome);
 
-  // Only reset hero gate when navigating onto home — not on initial mount after hero already ready
-  useEffect(() => {
-    const prev = prevPathRef.current;
-    prevPathRef.current = pathname;
-    if (pathname === "/" && prev !== "/") {
-      setHeroReady(false);
-    } else if (pathname !== "/") {
-      setHeroReady(true);
-    }
-  }, [pathname]);
+  const [themeReady, setThemeReady] = useState(false);
+  // Gate the hero splash only on a cold load that starts on home.
+  // Do NOT reset this on client navigations back to "/" — that caused a
+  // production deadlock on Netlify (pathname updates before HeroBanner mounts,
+  // so markHeroReady never runs and the overlay stays forever).
+  const [heroReady, setHeroReady] = useState(!isHome);
+  const [initialBootDone, setInitialBootDone] = useState(false);
 
   const markThemeReady = useCallback(() => {
     setThemeReady(true);
@@ -56,7 +52,24 @@ export function BootProvider({ children }: { children: React.ReactNode }) {
     setHeroReady(true);
   }, []);
 
-  const isBooted = themeReady && (!isHome || heroReady);
+  const gatesOpen = themeReady && (!isHome || heroReady);
+  const isBooted = initialBootDone || gatesOpen;
+
+  useEffect(() => {
+    if (gatesOpen) setInitialBootDone(true);
+  }, [gatesOpen]);
+
+  // One-shot safety net for the first paint only.
+  useEffect(() => {
+    if (initialBootDone) return;
+    const timer = window.setTimeout(() => {
+      setHeroReady(true);
+      setThemeReady(true);
+      setInitialBootDone(true);
+      document.documentElement.dataset.themeReady = "1";
+    }, BOOT_TIMEOUT_MS);
+    return () => window.clearTimeout(timer);
+  }, [initialBootDone]);
 
   const value = useMemo(
     () => ({
