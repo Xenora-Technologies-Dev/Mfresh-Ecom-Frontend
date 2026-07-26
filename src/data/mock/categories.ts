@@ -8,11 +8,6 @@ export const categories: Category[] = [
     description: "Farm-fresh fruits, vegetables, and herbs sourced daily.",
     image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=800&q=80",
     productCount: 5,
-    subcategories: [
-      { id: "sub-1", name: "Fruits", slug: "fruits", categoryId: "cat-1" },
-      { id: "sub-2", name: "Vegetables", slug: "vegetables", categoryId: "cat-1" },
-      { id: "sub-3", name: "Herbs & Greens", slug: "herbs-greens", categoryId: "cat-1" },
-    ],
   },
   {
     id: "cat-2",
@@ -21,11 +16,6 @@ export const categories: Category[] = [
     description: "Premium dairy products and farm-fresh eggs.",
     image: "https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=800&q=80",
     productCount: 3,
-    subcategories: [
-      { id: "sub-4", name: "Milk & Cream", slug: "milk-cream", categoryId: "cat-2" },
-      { id: "sub-5", name: "Cheese", slug: "cheese", categoryId: "cat-2" },
-      { id: "sub-6", name: "Eggs", slug: "eggs", categoryId: "cat-2" },
-    ],
   },
   {
     id: "cat-3",
@@ -34,11 +24,6 @@ export const categories: Category[] = [
     description: "Halal-certified meat and poultry from trusted suppliers.",
     image: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800&q=80",
     productCount: 4,
-    subcategories: [
-      { id: "sub-7", name: "Beef", slug: "beef", categoryId: "cat-3" },
-      { id: "sub-8", name: "Chicken", slug: "chicken", categoryId: "cat-3" },
-      { id: "sub-9", name: "Lamb", slug: "lamb", categoryId: "cat-3" },
-    ],
   },
   {
     id: "cat-4",
@@ -47,10 +32,6 @@ export const categories: Category[] = [
     description: "Fresh and frozen seafood from global waters.",
     image: "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80",
     productCount: 2,
-    subcategories: [
-      { id: "sub-10", name: "Fish", slug: "fish", categoryId: "cat-4" },
-      { id: "sub-11", name: "Shellfish", slug: "shellfish", categoryId: "cat-4" },
-    ],
   },
   {
     id: "cat-5",
@@ -59,10 +40,6 @@ export const categories: Category[] = [
     description: "Juices, coffee, tea, and specialty drinks.",
     image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=800&q=80",
     productCount: 3,
-    subcategories: [
-      { id: "sub-12", name: "Juices", slug: "juices", categoryId: "cat-5" },
-      { id: "sub-13", name: "Coffee & Tea", slug: "coffee-tea", categoryId: "cat-5" },
-    ],
   },
   {
     id: "cat-6",
@@ -71,10 +48,6 @@ export const categories: Category[] = [
     description: "Grains, spices, rice, and pantry staples.",
     image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=800&q=80",
     productCount: 2,
-    subcategories: [
-      { id: "sub-14", name: "Grains & Rice", slug: "grains-rice", categoryId: "cat-6" },
-      { id: "sub-15", name: "Spices", slug: "spices", categoryId: "cat-6" },
-    ],
   },
   {
     id: "cat-7",
@@ -83,10 +56,6 @@ export const categories: Category[] = [
     description: "Artisan breads, pastries, and baked goods.",
     image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
     productCount: 2,
-    subcategories: [
-      { id: "sub-16", name: "Bread", slug: "bread", categoryId: "cat-7" },
-      { id: "sub-17", name: "Pastries", slug: "pastries", categoryId: "cat-7" },
-    ],
   },
   {
     id: "cat-8",
@@ -95,10 +64,6 @@ export const categories: Category[] = [
     description: "Quality frozen ingredients for commercial kitchens.",
     image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=800&q=80",
     productCount: 2,
-    subcategories: [
-      { id: "sub-18", name: "Frozen Vegetables", slug: "frozen-vegetables", categoryId: "cat-8" },
-      { id: "sub-19", name: "Frozen Meals", slug: "frozen-meals", categoryId: "cat-8" },
-    ],
   },
   {
     id: "cat-9",
@@ -107,9 +72,6 @@ export const categories: Category[] = [
     description: "Certified organic and specialty gourmet ingredients.",
     image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=800&q=80",
     productCount: 2,
-    subcategories: [
-      { id: "sub-20", name: "Organic Produce", slug: "organic-produce", categoryId: "cat-9" },
-    ],
   },
   {
     id: "cat-10",
@@ -118,9 +80,6 @@ export const categories: Category[] = [
     description: "Sauces, dressings, and culinary condiments at scale.",
     image: "https://images.unsplash.com/photo-1472476443507-c7a5948772fc?w=800&q=80",
     productCount: 1,
-    subcategories: [
-      { id: "sub-21", name: "Sauces", slug: "sauces", categoryId: "cat-10" },
-    ],
   },
   {
     id: "cat-11",
@@ -129,9 +88,6 @@ export const categories: Category[] = [
     description: "Premium nuts, seeds, and dried fruit assortments.",
     image: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=800&q=80",
     productCount: 1,
-    subcategories: [
-      { id: "sub-22", name: "Nuts & Seeds", slug: "nuts-seeds", categoryId: "cat-11" },
-    ],
   },
   {
     id: "cat-12",
@@ -140,9 +96,6 @@ export const categories: Category[] = [
     description: "Wholesale snacks, chocolates, and confectionery.",
     image: "https://images.unsplash.com/photo-1621939514649-212f69d32d28?w=800&q=80",
     productCount: 1,
-    subcategories: [
-      { id: "sub-23", name: "Chocolate", slug: "chocolate", categoryId: "cat-12" },
-    ],
   },
   {
     id: "cat-13",
@@ -151,9 +104,6 @@ export const categories: Category[] = [
     description: "Shelf-stable canned and preserved foods.",
     image: "https://images.unsplash.com/photo-1584473457406-6240486418e9?w=800&q=80",
     productCount: 1,
-    subcategories: [
-      { id: "sub-24", name: "Canned Fish", slug: "canned-fish", categoryId: "cat-13" },
-    ],
   },
   {
     id: "cat-14",
@@ -162,8 +112,5 @@ export const categories: Category[] = [
     description: "Cooking oils, specialty fats, and culinary oils.",
     image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800&q=80",
     productCount: 2,
-    subcategories: [
-      { id: "sub-25", name: "Cooking Oils", slug: "cooking-oils", categoryId: "cat-14" },
-    ],
   },
 ];

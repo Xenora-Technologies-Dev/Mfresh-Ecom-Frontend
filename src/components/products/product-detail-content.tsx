@@ -90,12 +90,12 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
       slug: product.slug,
       name: product.name,
       quantity,
-      moqUnit: product.moqUnit,
-      price: product.price,
+      moqUnit: product.unit,
+      price: product.minPrice,
       currency: product.currency,
       image: product.image,
     });
-    toast.success(`Added ${quantity} ${product.moqUnit} to cart`);
+    toast.success(`Added ${quantity} ${product.unit} to cart`);
     openDrawer();
   };
 
@@ -122,8 +122,9 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
       </div>
 
       <ProductImageGallery
-        mainImage={product.mainImage}
-        subImages={product.subImages}
+        displayImage={product.displayImage}
+        additionalImages={product.additionalImages}
+        comingSoon={product.comingSoon}
         alt={product.name}
         className="mb-6"
       />
@@ -213,16 +214,17 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
         <div className="space-y-4">
           <div className="rounded-xl border border-border bg-white p-5 shadow-sm">
             <ProductPriceBlock
-              price={product.price}
+              minPrice={product.minPrice}
+              maxPrice={product.maxPrice}
               currency={product.currency}
               moq={product.moq}
-              moqUnit={product.moqUnit}
+              unit={product.unit}
             />
 
             {!unavailable && (
               <div className="mt-4">
                 <p className="mb-2 text-xs font-medium text-muted">
-                  Quantity ({product.moqUnit || "units"})
+                  Quantity ({product.unit || "units"})
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="inline-flex items-center rounded-xl border border-border">
@@ -247,10 +249,10 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
                       <Plus className="h-4 w-4" />
                     </button>
                   </div>
-                  <span className="text-sm text-muted">{product.moqUnit}</span>
+                  <span className="text-sm text-muted">{product.unit}</span>
                 </div>
                 <p className="mt-1.5 text-[11px] text-muted">
-                  Minimum order: {moq} {product.moqUnit}
+                  Minimum order: {moq}/{product.unit}
                 </p>
               </div>
             )}
@@ -348,7 +350,7 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
         open={loginOpen}
         onClose={() => setLoginOpen(false)}
         title="Login to add to cart"
-        description={`Sign in as a buyer to add ${quantity} ${product.moqUnit} of “${product.name}” to your cart.`}
+        description={`Sign in as a buyer to add ${quantity} ${product.unit} of “${product.name}” to your cart.`}
       />
     </>
   );

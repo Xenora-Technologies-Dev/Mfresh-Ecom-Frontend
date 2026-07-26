@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getCategories } from "@/lib/api/categories";
-import { getPriceRange, getUniqueCountries } from "@/lib/api/products";
+import { getUniqueCountries } from "@/lib/api/products";
 import { DEFAULT_COUNTRY_OPTIONS, mergeCountryLists } from "@/lib/countries";
 import { Label } from "@/components/ui/label";
 import {
@@ -12,10 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useCurrencyStore } from "@/store/currency-store";
-import { convertFromUsd, toUsdAmount } from "@/lib/currency";
 import type { ProductFilters } from "@/types";
 
 interface ProductFiltersPanelProps {
@@ -34,31 +31,15 @@ export function ProductFiltersPanel({
     queryFn: getCategories,
   });
 
-  const { data: meta } = useQuery({
-    queryKey: ["products-meta"],
-    queryFn: async () => {
-      const [priceRange, countries] = await Promise.all([
-        getPriceRange(),
-        getUniqueCountries(),
-      ]);
-      return { priceRange, countries };
-    },
+  const { data: countriesMeta = [] } = useQuery({
+    queryKey: ["products-countries"],
+    queryFn: getUniqueCountries,
   });
 
   const countries = mergeCountryLists(
     DEFAULT_COUNTRY_OPTIONS,
-    meta?.countries ?? [],
+    countriesMeta,
   );
-  const priceRange = meta?.priceRange ?? { min: 0, max: 0 };
-  const { currency, rates } = useCurrencyStore();
-
-  const displayMin = Math.round(
-    convertFromUsd(toUsdAmount(priceRange.min, "USD", rates), currency, rates),
-  );
-  const displayMax = Math.round(
-    convertFromUsd(toUsdAmount(priceRange.max, "USD", rates), currency, rates),
-  );
-  const selectedCategory = categories.find((c) => c.id === filters.category);
 
   return (
     <div className="space-y-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -74,7 +55,7 @@ export function ProductFiltersPanel({
         <Select
           value={filters.category ?? "all"}
           onValueChange={(v) =>
-            onChange({ ...filters, category: v === "all" ? undefined : v, subCategory: undefined })
+            onChange({ ...filters, category: v === "all" ? undefined : v })
           }
         >
           <SelectTrigger>
@@ -90,33 +71,6 @@ export function ProductFiltersPanel({
           </SelectContent>
         </Select>
       </div>
-
-      {selectedCategory && selectedCategory.subcategories.length > 0 && (
-        <div className="space-y-2">
-          <Label>Sub Category (optional)</Label>
-          <Select
-            value={filters.subCategory ?? "all"}
-            onValueChange={(v) =>
-              onChange({
-                ...filters,
-                subCategory: v === "all" ? undefined : v,
-              })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="All subcategories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All subcategories</SelectItem>
-              {selectedCategory.subcategories.map((s) => (
-                <SelectItem key={s.id} value={s.id}>
-                  {s.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
 
       <div className="space-y-2">
         <Label>Country</Label>
@@ -138,48 +92,6 @@ export function ProductFiltersPanel({
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label>
-          Price Range ({displayMin} - {displayMax} {currency})
-        </Label>
-        <div className="grid grid-cols-2 gap-2">
-          <Input
-            type="number"
-            placeholder="Min"
-            value={
-              filters.minPrice != null
-                ? Math.round(convertFromUsd(filters.minPrice, currency, rates))
-                : ""
-            }
-            onChange={(e) => {
-              const raw = e.target.value ? Number(e.target.value) : undefined;
-              onChange({
-                ...filters,
-                minPrice:
-                  raw != null ? toUsdAmount(raw, currency, rates) : undefined,
-              });
-            }}
-          />
-          <Input
-            type="number"
-            placeholder="Max"
-            value={
-              filters.maxPrice != null
-                ? Math.round(convertFromUsd(filters.maxPrice, currency, rates))
-                : ""
-            }
-            onChange={(e) => {
-              const raw = e.target.value ? Number(e.target.value) : undefined;
-              onChange({
-                ...filters,
-                maxPrice:
-                  raw != null ? toUsdAmount(raw, currency, rates) : undefined,
-              });
-            }}
-          />
-        </div>
       </div>
     </div>
   );

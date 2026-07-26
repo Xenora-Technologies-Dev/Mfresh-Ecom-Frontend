@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { PriceDisplay } from "@/components/shared/price-display";
 import { CountryFlagIcon } from "@/components/shared/country-flag-icon";
+import { ProductComingSoonImage } from "@/components/products/product-coming-soon-image";
 import { useFavoritesStore } from "@/store/favorites-store";
 import type { Product } from "@/types";
 import { cn } from "@/lib/utils";
@@ -32,16 +33,22 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
       <Link href={`/products/${product.slug}`} className="block">
         <div className="relative overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary-light/25 group-hover:shadow-md group-hover:shadow-primary/5">
           <div className="relative aspect-[5/4] overflow-hidden bg-primary-muted/40">
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              className={cn(
-                "object-cover transition-transform duration-500 group-hover:scale-105",
-                (product.soldOut || product.isActive === false) && "opacity-60",
-              )}
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-            />
+            {product.comingSoon || !product.image ? (
+              <ProductComingSoonImage
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+              />
+            ) : (
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                className={cn(
+                  "object-cover transition-transform duration-500 group-hover:scale-105",
+                  (product.soldOut || product.isActive === false) && "opacity-60",
+                )}
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+              />
+            )}
             <div className="absolute left-2 top-2 flex flex-wrap gap-1">
               {product.isNew && <Badge variant="new">New</Badge>}
               {product.featured && <Badge variant="secondary">Featured</Badge>}
@@ -69,15 +76,9 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
           </div>
 
           <div className="space-y-1.5 p-2.5 sm:space-y-2 sm:p-3">
-            {(product.categoryName || product.subCategoryName) && (
+            {product.categoryName && (
               <p className="text-[10px] font-medium text-muted">
                 {product.categoryName}
-                {product.subCategoryName && (
-                  <>
-                    <span className="mx-1 text-gray-300">›</span>
-                    {product.subCategoryName}
-                  </>
-                )}
               </p>
             )}
 
@@ -95,12 +96,39 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
             <div className="flex items-end justify-between gap-2 pt-0.5">
               <div className="min-w-0">
                 <p className="text-sm font-bold text-primary sm:text-base">
-                  <PriceDisplay price={product.price} storedCurrency={product.currency} />
+                  {product.minPrice === product.maxPrice ? (
+                    <>
+                      <PriceDisplay
+                        price={product.minPrice}
+                        storedCurrency={product.currency}
+                      />
+                      <span className="text-[10px] font-medium text-muted">
+                        /{product.unit}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <PriceDisplay
+                        price={product.minPrice}
+                        storedCurrency={product.currency}
+                      />
+                      <span className="mx-0.5 text-[10px] font-normal text-muted">
+                        –
+                      </span>
+                      <PriceDisplay
+                        price={product.maxPrice}
+                        storedCurrency={product.currency}
+                      />
+                      <span className="text-[10px] font-medium text-muted">
+                        /{product.unit}
+                      </span>
+                    </>
+                  )}
                 </p>
                 <p className="flex items-center gap-1 text-[10px] text-muted">
                   <Package className="h-3 w-3 shrink-0" />
                   <span className="truncate">
-                    MOQ: {product.moq} {product.moqUnit}
+                    MOQ: {product.moq}/{product.unit}
                   </span>
                 </p>
               </div>

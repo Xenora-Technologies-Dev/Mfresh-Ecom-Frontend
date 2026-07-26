@@ -5,15 +5,6 @@ export interface Category {
   description: string;
   image: string;
   productCount: number;
-  subcategories: SubCategory[];
-}
-
-export interface SubCategory {
-  id: string;
-  name: string;
-  slug: string;
-  categoryId: string;
-  image?: string;
 }
 
 export interface Supplier {
@@ -34,24 +25,35 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
+  /** Listing / card image (display image), or empty when coming soon */
   image: string;
-  images: string[];
-  mainImage?: string;
-  subImages?: string[];
+  /** True when no display image is set */
+  comingSoon?: boolean;
+  /** Display image URL (large view primary) */
   displayImage?: string;
+  /** Additional gallery images */
+  additionalImages?: string[];
+  /** @deprecated use displayImage + additionalImages */
+  images: string[];
+  /** @deprecated use displayImage */
+  mainImage?: string;
+  /** @deprecated use additionalImages */
+  subImages?: string[];
+  minPrice: number;
+  maxPrice: number;
+  /** @deprecated use minPrice */
   price: number;
   currency: string;
   moq: number;
+  unit: string;
+  /** @deprecated use unit */
   moqUnit: string;
   country: string;
   categoryId: string;
   categoryName: string;
   categorySlug?: string;
-  subCategoryId?: string;
-  subCategoryName?: string;
-  subCategorySlug?: string;
-  supplierId: string;
-  supplierName: string;
+  supplierId?: string;
+  supplierName?: string;
   featured?: boolean;
   popular?: boolean;
   isNew?: boolean;
@@ -99,11 +101,8 @@ export interface SearchResult {
 
 export interface ProductFilters {
   category?: string;
-  subCategory?: string;
   country?: string;
   supplier?: string;
-  minPrice?: number;
-  maxPrice?: number;
   search?: string;
   popular?: boolean;
   featured?: boolean;

@@ -172,11 +172,28 @@ export function WishlistContent() {
                       </div>
 
                       <p className="mt-1 text-sm text-muted">
-                        <PriceDisplay
-                          price={product.price}
-                          storedCurrency={product.currency}
-                        />
-                        /{product.moqUnit}
+                        {product.minPrice === product.maxPrice ? (
+                          <>
+                            <PriceDisplay
+                              price={product.minPrice}
+                              storedCurrency={product.currency}
+                            />
+                            /{product.unit}
+                          </>
+                        ) : (
+                          <>
+                            <PriceDisplay
+                              price={product.minPrice}
+                              storedCurrency={product.currency}
+                            />
+                            {" – "}
+                            <PriceDisplay
+                              price={product.maxPrice}
+                              storedCurrency={product.currency}
+                            />
+                            /{product.unit}
+                          </>
+                        )}
                       </p>
 
                       {product.country && (

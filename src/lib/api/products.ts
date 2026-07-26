@@ -8,11 +8,8 @@ function toQuery(filters: ProductFilters & { page?: number; limit?: number } = {
     limit: filters.limit ?? 100,
     search: filters.search,
     categoryId: filters.category,
-    subCategoryId: filters.subCategory,
     supplierId: filters.supplier,
     country: filters.country,
-    minPrice: filters.minPrice,
-    maxPrice: filters.maxPrice,
     isActive: true,
     popular: filters.popular,
     featured: filters.featured,
@@ -78,10 +75,7 @@ export async function getRelatedProducts(
 }
 
 export async function getPriceRange(): Promise<{ min: number; max: number }> {
-  const meta = await api<{ priceRange: { min: number; max: number } }>(
-    "/products/meta",
-  );
-  return meta.priceRange;
+  return { min: 0, max: 0 };
 }
 
 export async function getUniqueCountries(): Promise<string[]> {

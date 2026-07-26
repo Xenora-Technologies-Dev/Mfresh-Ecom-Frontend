@@ -5,30 +5,13 @@ import type {
   Country,
   FAQ,
   Product,
-  SubCategory,
   Supplier,
   Testimonial,
 } from "@/types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export function mapSubCategory(raw: any): SubCategory {
-  const imagePath = raw.imageUrl ?? raw.image;
-  return {
-    id: raw.id,
-    name: raw.name,
-    slug: raw.slug,
-    categoryId: raw.categoryId,
-    image: imagePath
-      ? String(imagePath).startsWith("http")
-        ? String(imagePath)
-        : storageUrl(imagePath)
-      : undefined,
-  };
-}
-
 export function mapCategory(raw: any): Category {
-  const subs = raw.subCategories ?? raw.subcategories ?? [];
   return {
     id: raw.id,
     name: raw.name,
@@ -36,7 +19,6 @@ export function mapCategory(raw: any): Category {
     description: raw.description ?? "",
     image: storageUrl(raw.imageUrl ?? raw.image),
     productCount: raw.productCount ?? raw._count?.products ?? 0,
-    subcategories: subs.map(mapSubCategory),
   };
 }
 
@@ -57,60 +39,65 @@ export function mapSupplier(raw: any): Supplier {
 
 export function mapProduct(raw: any): Product {
   const rawImageList = raw.imageUrls ?? [];
-  const display = rawImageList.find((i: any) => i.type === "DISPLAY");
-  const main = rawImageList.find((i: any) => i.type === "MAIN");
-  const subs = rawImageList.filter((i: any) => i.type === "SUB");
+  const display =
+    rawImageList.find((i: any) => i.type === "DISPLAY") ??
+    rawImageList.find((i: any) => i.type === "MAIN");
+  const additional = rawImageList.filter(
+    (i: any) => i.type === "ADDITIONAL" || i.type === "SUB",
+  );
 
-  const displayUrl = display?.display ?? display?.large ?? raw.displayImageUrl;
-  const mainUrl =
-    main?.large ?? main?.display ?? raw.mainImageUrl ?? displayUrl;
-  const subUrls = (
-    subs.length
-      ? subs.map((i: any) => i.medium ?? i.display ?? i.large)
-      : (raw.subImageUrls as string[] | undefined) ?? []
-  ).filter(Boolean);
-
-  const cardPrimary =
+  const displayUrl =
+    display?.large ??
+    display?.display ??
+    display?.medium ??
     raw.displayImageUrl ??
-    raw.imageUrl ??
-    displayUrl ??
-    mainUrl ??
+    raw.mainImageUrl ??
     null;
 
-  const galleryImages = [
-    mainUrl,
-    ...subUrls.filter((u: string) => u !== mainUrl),
-  ]
-    .filter(Boolean)
-    .map((u: string) => storageUrl(u));
+  const additionalUrls = (
+    additional.length
+      ? additional.map(
+          (i: any) => i.large ?? i.medium ?? i.display ?? i.original,
+        )
+      : (raw.additionalImageUrls as string[] | undefined) ??
+        (raw.subImageUrls as string[] | undefined) ??
+        []
+  ).filter(Boolean) as string[];
+
+  const comingSoon = !displayUrl;
+  const cardPrimary = displayUrl;
+
+  const minPrice = Number(raw.minPrice ?? raw.price ?? 0);
+  const maxPrice = Number(raw.maxPrice ?? raw.price ?? minPrice);
+  const unit = String(raw.unit ?? raw.moqUnit ?? "kg");
 
   return {
     id: raw.id,
     name: raw.name,
     slug: raw.slug,
     description: raw.description ?? "",
-    image: storageUrl(cardPrimary),
-    displayImage: displayUrl ? storageUrl(displayUrl) : storageUrl(cardPrimary),
-    mainImage: mainUrl ? storageUrl(mainUrl) : undefined,
-    subImages: subUrls.map((u: string) => storageUrl(u)),
-    images: galleryImages.length
-      ? galleryImages
-      : cardPrimary
-        ? [storageUrl(cardPrimary)]
-        : [],
-    price: raw.price,
+    image: comingSoon ? "" : storageUrl(cardPrimary),
+    comingSoon,
+    displayImage: comingSoon ? undefined : storageUrl(displayUrl),
+    additionalImages: additionalUrls.map((u: string) => storageUrl(u)),
+    images: comingSoon
+      ? []
+      : [storageUrl(displayUrl), ...additionalUrls.map((u) => storageUrl(u))],
+    mainImage: comingSoon ? undefined : storageUrl(displayUrl),
+    subImages: additionalUrls.map((u: string) => storageUrl(u)),
+    minPrice,
+    maxPrice,
+    price: minPrice,
     currency: raw.currency ?? "USD",
     moq: raw.moq,
-    moqUnit: raw.moqUnit,
+    unit,
+    moqUnit: unit,
     country: raw.country ?? "",
     categoryId: raw.categoryId,
     categoryName: raw.category?.name ?? raw.categoryName ?? "",
     categorySlug: raw.category?.slug ?? raw.categorySlug ?? undefined,
-    subCategoryId: raw.subCategoryId ?? undefined,
-    subCategoryName: raw.subCategory?.name ?? raw.subCategoryName ?? undefined,
-    subCategorySlug: raw.subCategory?.slug ?? raw.subCategorySlug ?? undefined,
-    supplierId: raw.supplierId,
-    supplierName: raw.supplier?.name ?? raw.supplierName ?? "",
+    supplierId: raw.supplierId ?? undefined,
+    supplierName: raw.supplier?.name ?? raw.supplierName ?? undefined,
     featured: raw.featured,
     popular: raw.popular,
     isNew: raw.isNew,

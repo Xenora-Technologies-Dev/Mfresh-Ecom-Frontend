@@ -29,14 +29,6 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     ...(product.categorySlug
       ? [{ label: product.categoryName, href: `/categories/${product.categorySlug}` }]
       : []),
-    ...(product.subCategorySlug && product.categorySlug
-      ? [
-          {
-            label: product.subCategoryName ?? product.subCategorySlug,
-            href: `/products?category=${product.categorySlug}&subcategory=${product.subCategorySlug}`,
-          },
-        ]
-      : []),
     { label: product.name },
   ];
 

@@ -58,38 +58,18 @@ export function CategoriesNavDropdown({ className }: { className?: string }) {
             {categories.length > 0 ? (
               <div className="grid gap-1 px-2 sm:grid-cols-2 lg:grid-cols-3">
                 {categories.map((cat) => (
-                  <div key={cat.id} className="rounded-lg p-2 hover:bg-light-gray/80">
-                    <Link
-                      href={`/categories/${cat.slug}`}
-                      className="block text-sm font-semibold text-dark-gray hover:text-primary"
-                    >
-                      {cat.name}
-                    </Link>
-                    {cat.subcategories.length > 0 && (
-                      <ul className="mt-1.5 space-y-0.5 pl-1">
-                        {cat.subcategories.slice(0, 6).map((sub) => (
-                          <li key={sub.id}>
-                            <Link
-                              href={`/products?category=${encodeURIComponent(cat.slug)}&subcategory=${encodeURIComponent(sub.slug)}`}
-                              className="block py-0.5 text-xs text-muted transition-colors hover:text-primary"
-                            >
-                              {sub.name}
-                            </Link>
-                          </li>
-                        ))}
-                        {cat.subcategories.length > 6 && (
-                          <li>
-                            <Link
-                              href={`/categories/${cat.slug}`}
-                              className="text-xs font-medium text-primary"
-                            >
-                              +{cat.subcategories.length - 6} more
-                            </Link>
-                          </li>
-                        )}
-                      </ul>
+                  <Link
+                    key={cat.id}
+                    href={`/categories/${cat.slug}`}
+                    className="rounded-lg p-2 text-sm font-semibold text-dark-gray hover:bg-light-gray/80 hover:text-primary"
+                  >
+                    {cat.name}
+                    {cat.productCount > 0 && (
+                      <span className="ml-1.5 text-xs font-normal text-muted">
+                        ({cat.productCount})
+                      </span>
                     )}
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (

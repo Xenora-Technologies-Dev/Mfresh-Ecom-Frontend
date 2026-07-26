@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -17,14 +16,13 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { ProductFilters } from "@/types";
 
-function buildProductsUrl(filters: ProductFilters, categories: { id: string; slug: string; subcategories: { id: string; slug: string }[] }[]) {
+function buildProductsUrl(
+  filters: ProductFilters,
+  categories: { id: string; slug: string }[],
+) {
   const params = new URLSearchParams();
   const cat = categories.find((c) => c.id === filters.category);
-  if (cat) {
-    params.set("category", cat.slug);
-    const sub = cat.subcategories.find((s) => s.id === filters.subCategory);
-    if (sub) params.set("subcategory", sub.slug);
-  }
+  if (cat) params.set("category", cat.slug);
   if (filters.country) params.set("country", filters.country);
   if (filters.search) params.set("q", filters.search);
   const qs = params.toString();
@@ -35,7 +33,6 @@ export default function ProductsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const categorySlug = searchParams.get("category");
-  const subcategorySlug = searchParams.get("subcategory");
 
   const [page, setPage] = useState(1);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -54,42 +51,24 @@ export default function ProductsPageContent() {
     [categories, filters.category],
   );
 
-  const activeSubcategory = useMemo(
-    () =>
-      activeCategory?.subcategories.find((s) => s.id === filters.subCategory),
-    [activeCategory, filters.subCategory],
-  );
-
-  // Hydrate category/subcategory from URL whenever query params or categories change
   useEffect(() => {
     if (!categories.length) return;
 
     const cat = categorySlug
       ? categories.find((c) => c.slug === categorySlug)
       : undefined;
-    const sub =
-      cat && subcategorySlug
-        ? cat.subcategories.find((s) => s.slug === subcategorySlug)
-        : undefined;
 
     const nextCategory = cat?.id;
-    const nextSub = sub?.id;
 
     setFilters((prev) => {
-      if (prev.category === nextCategory && prev.subCategory === nextSub) {
-        return prev;
-      }
-      return {
-        ...prev,
-        category: nextCategory,
-        subCategory: nextSub,
-      };
+      if (prev.category === nextCategory) return prev;
+      return { ...prev, category: nextCategory };
     });
-  }, [categories, categorySlug, subcategorySlug]);
+  }, [categories, categorySlug]);
 
   useEffect(() => {
     setPage(1);
-  }, [categorySlug, subcategorySlug]);
+  }, [categorySlug]);
 
   const applyFilters = useCallback(
     (next: ProductFilters, options?: { syncUrl?: boolean }) => {
@@ -129,23 +108,13 @@ export default function ProductsPageContent() {
         label: activeCategory.name,
         href: `/categories/${activeCategory.slug}`,
       });
-    }
-    if (activeSubcategory) {
-      items.push({
-        label: activeSubcategory.name,
-        href: `/products?category=${encodeURIComponent(activeCategory!.slug)}&subcategory=${encodeURIComponent(activeSubcategory.slug)}`,
-      });
-    } else if (!activeCategory) {
+    } else {
       items.push({ label: "Products", href: "/products" });
     }
     return items;
-  }, [activeCategory, activeSubcategory]);
+  }, [activeCategory]);
 
-  const pageTitle = activeSubcategory
-    ? `${activeCategory?.name} — ${activeSubcategory.name}`
-    : activeCategory
-      ? activeCategory.name
-      : "Products";
+  const pageTitle = activeCategory ? activeCategory.name : "Products";
 
   return (
     <section className="py-8 sm:py-12">
@@ -171,36 +140,6 @@ export default function ProductsPageContent() {
             />
           </div>
         </div>
-
-        {activeCategory && activeCategory.subcategories.length > 0 && (
-          <div className="mb-6 flex flex-wrap gap-2">
-            <Link
-              href={`/products?category=${encodeURIComponent(activeCategory.slug)}`}
-              className={cn(
-                "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors sm:text-sm",
-                !activeSubcategory
-                  ? "border-primary bg-primary text-white"
-                  : "border-border bg-white text-dark-gray hover:border-primary/40",
-              )}
-            >
-              All {activeCategory.name}
-            </Link>
-            {activeCategory.subcategories.map((sub) => (
-              <Link
-                key={sub.id}
-                href={`/products?category=${encodeURIComponent(activeCategory.slug)}&subcategory=${encodeURIComponent(sub.slug)}`}
-                className={cn(
-                  "rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors sm:text-sm",
-                  activeSubcategory?.id === sub.id
-                    ? "border-primary bg-primary text-white"
-                    : "border-border bg-white text-dark-gray hover:border-primary/40",
-                )}
-              >
-                {sub.name}
-              </Link>
-            ))}
-          </div>
-        )}
 
         <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
           <p className="text-sm text-muted">
@@ -245,11 +184,9 @@ export default function ProductsPageContent() {
             ) : products.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-gray-200 py-16 text-center">
                 <p className="text-muted">
-                  {activeSubcategory
-                    ? `No products in ${activeSubcategory.name} yet.`
-                    : activeCategory
-                      ? `No products in ${activeCategory.name} yet.`
-                      : "No products match your filters."}
+                  {activeCategory
+                    ? `No products in ${activeCategory.name} yet.`
+                    : "No products match your filters."}
                 </p>
               </div>
             ) : (

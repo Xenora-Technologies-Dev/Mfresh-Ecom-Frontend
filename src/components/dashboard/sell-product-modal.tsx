@@ -56,7 +56,7 @@ export function SellProductModal({
   const handleFile = async (file: File) => {
     setUploading(true);
     try {
-      const result = await uploadImage(file, "MAIN", true);
+      const result = await uploadImage(file, "DISPLAY", true);
       setImagePath(result.urls.display);
       setImagePreview(storageUrl(result.urls.display));
     } catch {

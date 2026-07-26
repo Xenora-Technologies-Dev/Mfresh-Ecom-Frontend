@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
 import { getCategoryBySlug } from "@/lib/api/categories";
-import { SubcategoryImageCard } from "@/components/categories/subcategory-image-card";
+import { getProductsPaginated } from "@/lib/api/products";
+import { ProductCard } from "@/components/products/product-card";
 import { CategoryBreadcrumbs } from "@/components/shared/category-breadcrumbs";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
+import { ProductGridSkeleton } from "@/components/shared/skeletons";
 
 interface CategoryDetailContentProps {
   slug: string;
@@ -17,6 +19,13 @@ export function CategoryDetailContent({ slug }: CategoryDetailContentProps) {
   const { data: category, isLoading, isError } = useQuery({
     queryKey: ["category", slug],
     queryFn: () => getCategoryBySlug(slug),
+  });
+
+  const { data: productsData, isLoading: productsLoading } = useQuery({
+    queryKey: ["category-products", category?.id],
+    queryFn: () =>
+      getProductsPaginated({ category: category!.id, page: 1, limit: 24 }),
+    enabled: !!category?.id,
   });
 
   if (isLoading) {
@@ -29,7 +38,7 @@ export function CategoryDetailContent({ slug }: CategoryDetailContentProps) {
     notFound();
   }
 
-  const subcategories = category.subcategories ?? [];
+  const products = productsData?.products ?? [];
 
   return (
     <section className="py-8 sm:py-12">
@@ -41,41 +50,35 @@ export function CategoryDetailContent({ slug }: CategoryDetailContentProps) {
           ]}
           className="mb-4"
         />
-        <h1 className="text-2xl font-bold text-dark-gray sm:text-3xl">
-          Category — {category.name}
-        </h1>
-        {category.description && (
-          <p className="mt-2 max-w-2xl text-muted">{category.description}</p>
-        )}
-
-        {subcategories.length === 0 ? (
-          <div className="mt-10 space-y-4 text-center">
-            <EmptyState
-              title="No subcategories yet"
-              message="Browse all products in this category."
-            />
-            <Button asChild>
-              <Link href={`/products?category=${encodeURIComponent(category.slug)}`}>
-                View products
-              </Link>
-            </Button>
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-dark-gray sm:text-3xl">
+              {category.name}
+            </h1>
+            {category.description && (
+              <p className="mt-2 max-w-2xl text-muted">{category.description}</p>
+            )}
           </div>
+          <Button asChild variant="outline">
+            <Link href={`/products?category=${encodeURIComponent(category.slug)}`}>
+              View all products
+            </Link>
+          </Button>
+        </div>
+
+        {productsLoading ? (
+          <ProductGridSkeleton />
+        ) : products.length === 0 ? (
+          <EmptyState
+            title="No products yet"
+            message="Products in this category will appear here once they are added."
+          />
         ) : (
-          <>
-            <h2 className="mt-8 mb-4 text-lg font-semibold text-dark-gray">
-              Subcategories
-            </h2>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-              {subcategories.map((sub, i) => (
-                <SubcategoryImageCard
-                  key={sub.id}
-                  categorySlug={category.slug}
-                  subcategory={sub}
-                  index={i}
-                />
-              ))}
-            </div>
-          </>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
+            {products.map((p, i) => (
+              <ProductCard key={p.id} product={p} index={i} />
+            ))}
+          </div>
         )}
       </div>
     </section>

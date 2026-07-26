@@ -34,6 +34,7 @@ export class ApiError extends Error {
 
 
 export const PLACEHOLDER_IMAGE = "/images/placeholder.svg";
+export const MFRESH_LOGO = "/images/mfresh-logo.png";
 
 export function storageUrl(path?: string | null): string {
   if (!path) return PLACEHOLDER_IMAGE;
@@ -94,7 +95,7 @@ export interface UploadedImageResult {
 
 export async function uploadImage(
   file: File,
-  type: "MAIN" | "SUB" | "DISPLAY" = "MAIN",
+  type: "DISPLAY" | "ADDITIONAL" = "DISPLAY",
   preview = true,
 ): Promise<UploadedImageResult> {
   const form = new FormData();
