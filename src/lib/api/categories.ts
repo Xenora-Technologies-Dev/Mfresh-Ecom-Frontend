@@ -4,7 +4,7 @@ import type { Category } from "@/types";
 
 export async function getCategories(): Promise<Category[]> {
   const res = await api<PaginatedResponse<Record<string, unknown>>>(
-    `/categories${qs({ limit: 100, isActive: true, includeSubcategories: true })}`,
+    `/categories${qs({ limit: 100, isActive: true })}`,
   );
   return res.data.map(mapCategory);
 }
@@ -20,7 +20,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 
 export async function searchCategories(query: string): Promise<Category[]> {
   const res = await api<PaginatedResponse<Record<string, unknown>>>(
-    `/categories${qs({ search: query, limit: 20, isActive: true, includeSubcategories: true })}`,
+    `/categories${qs({ search: query, limit: 20, isActive: true })}`,
   );
   return res.data.map(mapCategory);
 }
