@@ -17,6 +17,7 @@ const SUBCATEGORY_IMAGES: Record<string, string> = {
 const DEFAULT_SUBCATEGORY_IMAGE =
   "https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&q=80";
 
+/** @deprecated Subcategories removed — kept for leftover UI until deleted. */
 export function getSubcategoryFallbackImage(slug: string): string {
   return SUBCATEGORY_IMAGES[slug] ?? DEFAULT_SUBCATEGORY_IMAGE;
 }

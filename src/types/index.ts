@@ -7,6 +7,16 @@ export interface Category {
   productCount: number;
 }
 
+/** @deprecated Subcategories were removed from the API; kept so leftover UI can typecheck until deleted. */
+export interface SubCategory {
+  id: string;
+  name: string;
+  slug: string;
+  image?: string;
+  categoryId?: string;
+  productCount?: number;
+}
+
 export interface Supplier {
   id: string;
   name: string;

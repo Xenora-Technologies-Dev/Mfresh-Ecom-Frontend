@@ -14,6 +14,7 @@ interface SubcategoryImageCardProps {
   className?: string;
 }
 
+/** @deprecated Subcategories removed — safe stub for builds that still ship this file. */
 export function SubcategoryImageCard({
   categorySlug,
   subcategory,
@@ -32,7 +33,7 @@ export function SubcategoryImageCard({
       className={cn("group", className)}
     >
       <Link
-        href={`/products?category=${encodeURIComponent(categorySlug)}&subcategory=${encodeURIComponent(subcategory.slug)}`}
+        href={`/products?category=${encodeURIComponent(categorySlug)}`}
         className="block"
       >
         <div className="relative aspect-square overflow-hidden rounded-xl border border-border/60 shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md">
