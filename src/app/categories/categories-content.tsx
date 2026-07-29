@@ -33,7 +33,7 @@ export default function CategoriesPageContent() {
               message="Categories added in the admin portal will appear here."
             />
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
               {categories.map((cat, i) => (
                 <CategoryImageCard key={cat.id} category={cat} index={i} />
               ))}

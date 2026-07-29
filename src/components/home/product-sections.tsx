@@ -48,7 +48,7 @@ function ProductSliderSection({
             itemsPerPage={PRODUCTS_PER_PAGE}
             autoPlay
             autoPlayIntervalMs={5000}
-            gridClassName="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-5"
+            gridClassName="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-5"
             renderItem={(product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             )}

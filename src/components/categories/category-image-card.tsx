@@ -26,7 +26,7 @@ export function CategoryImageCard({
       className={cn("group", className)}
     >
       <Link href={`/categories/${category.slug}`} className="block">
-        <div className="relative aspect-[5/4] overflow-hidden rounded-lg border border-border/60 shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md sm:aspect-[4/3]">
+        <div className="relative aspect-square overflow-hidden rounded-lg border border-border/60 shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md">
           <Image
             src={category.image}
             alt={category.name}

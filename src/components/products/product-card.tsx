@@ -32,7 +32,7 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
     >
       <Link href={`/products/${product.slug}`} className="block">
         <div className="relative overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary-light/25 group-hover:shadow-md group-hover:shadow-primary/5">
-          <div className="relative aspect-[5/4] overflow-hidden bg-primary-muted/40">
+          <div className="relative aspect-square overflow-hidden bg-primary-muted/40">
             {product.comingSoon || !product.image ? (
               <ProductComingSoonImage
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"

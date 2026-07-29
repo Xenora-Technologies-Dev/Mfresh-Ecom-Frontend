@@ -33,7 +33,7 @@ export function FoodCategoriesGrid() {
           <SectionSlider
             items={categories}
             itemsPerPage={CATEGORIES_PER_PAGE}
-            gridClassName="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5"
+            gridClassName="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5 xl:grid-cols-6"
             renderItem={(cat, i) => (
               <CategoryImageCard key={cat.id} category={cat} index={i} />
             )}
