@@ -11,13 +11,17 @@ export function ProductFavoriteButton({ productId }: { productId: string }) {
 
   return (
     <Button
-      size="lg"
+      size="icon"
       variant="outline"
       onClick={() => toggleFavorite(productId)}
-      className={cn(favorited && "border-red-200 text-red-500")}
+      aria-label={favorited ? "Remove from wishlist" : "Add to wishlist"}
+      title={favorited ? "Wishlisted" : "Wishlist"}
+      className={cn(
+        "h-10 w-10 shrink-0 rounded-full",
+        favorited && "border-red-200 text-red-500",
+      )}
     >
       <Heart className={cn("h-4 w-4", favorited && "fill-current")} />
-      {favorited ? "Wishlisted" : "Wishlist"}
     </Button>
   );
 }

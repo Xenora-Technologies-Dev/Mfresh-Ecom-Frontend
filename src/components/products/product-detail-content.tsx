@@ -284,7 +284,7 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
 
   return (
     <>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3 sm:mb-5">
+      <div className="mb-4 flex items-start gap-3 sm:mb-5">
         <div className="min-w-0 flex-1">
           <div className="mb-2 flex flex-wrap gap-2">
             {product.isNew && <Badge variant="new">New</Badge>}
@@ -294,11 +294,11 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
               <Badge variant="outline">Unavailable</Badge>
             )}
           </div>
-          <h1 className="text-xl font-bold leading-snug text-dark-gray sm:text-2xl lg:text-3xl">
+          <h1 className="pr-1 text-xl font-bold leading-snug text-dark-gray sm:text-2xl lg:text-3xl">
             {product.name}
           </h1>
         </div>
-        <div className="flex shrink-0 flex-wrap gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
           <ProductFavoriteButton productId={product.id} />
           <ProductShareButton product={product} />
         </div>

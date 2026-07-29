@@ -19,7 +19,6 @@ function buildProductShare(product: Product): { title: string; text: string; url
 export function ProductShareButton({ product }: { product: Product }) {
   const handleShare = async () => {
     const { title, text, url } = buildProductShare(product);
-    // One URL only — native share attaches `url` separately; clipboard gets a single line.
     const clipboardPayload = `${text}\n${url}`;
     try {
       if (typeof navigator !== "undefined" && navigator.share) {
@@ -40,9 +39,15 @@ export function ProductShareButton({ product }: { product: Product }) {
   };
 
   return (
-    <Button size="lg" variant="outline" onClick={() => void handleShare()} className="gap-2">
+    <Button
+      size="icon"
+      variant="outline"
+      onClick={() => void handleShare()}
+      aria-label="Share product"
+      title="Share"
+      className="h-10 w-10 shrink-0 rounded-full"
+    >
       <Share2 className="h-4 w-4" />
-      Share
     </Button>
   );
 }
