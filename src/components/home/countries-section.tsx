@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCountries } from "@/lib/api/countries";
@@ -19,15 +18,14 @@ const COUNTRIES_PER_PAGE = 10;
 
 function CountryCard({ country }: { country: Country }) {
   return (
-    <Link
-      href={`/products?country=${encodeURIComponent(country.name)}`}
-      className="flex min-h-[7.5rem] flex-col items-center gap-1.5 rounded-xl border border-border bg-surface p-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary-light/30 hover:shadow-md sm:min-h-[8rem] sm:p-3.5"
+    <div
+      className="flex min-h-[7.5rem] flex-col items-center gap-1.5 rounded-xl border border-border bg-surface p-3 text-center shadow-sm sm:min-h-[8rem] sm:p-3.5"
     >
       <CountryFlagIcon country={country.name} size={44} />
       <span className="text-xs font-semibold text-dark-gray sm:text-sm">
         {country.name}
       </span>
-    </Link>
+    </div>
   );
 }
 

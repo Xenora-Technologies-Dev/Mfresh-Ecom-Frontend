@@ -2,20 +2,21 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Droplets, Leaf, Send, Truck } from "lucide-react";
+import { Leaf, Send, Truck, Package, Tag } from "lucide-react";
 import { PageHero } from "@/components/shared/page-hero";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
 import { AnimatedSection } from "@/components/shared/animated-section";
 import { submitLead } from "@/lib/api/leads";
 import { cn } from "@/lib/utils";
 
 const INTEREST_OPTIONS = [
   { value: "mfresh-food", label: "M Fresh — Food brand" },
-  { value: "mr-fresh-cleaning", label: "MR Fresh — Cleaning liquids" },
-  { value: "both", label: "Both brands" },
+  { value: "mfresh-private-label", label: "M Fresh — Private label products" },
+  { value: "both", label: "All product lines" },
 ] as const;
 
 export default function DistributionPage() {
@@ -61,62 +62,80 @@ export default function DistributionPage() {
     <>
       <PageHero
         title="Distribution"
-        subtitle="Partner with M Fresh and MR Fresh across food and cleaning categories."
+        subtitle="Partner with M Fresh — our own brand products and private label lines."
       />
 
       <AnimatedSection className="py-12 sm:py-16">
         <div className="container-main space-y-12">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <article className="rounded-2xl border border-primary/15 bg-primary-muted/40 p-6 sm:p-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white">
-                <Leaf className="h-6 w-6" />
+          <article className="rounded-2xl border border-primary/15 bg-primary-muted/40 p-6 sm:p-8">
+            <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+              <div className="relative h-20 w-40 shrink-0">
+                <Image
+                  src="/mfresh-logo.png"
+                  alt="M Fresh Logo"
+                  fill
+                  className="object-contain"
+                  unoptimized
+                />
               </div>
-              <h2 className="mt-4 text-xl font-bold text-dark-gray">M Fresh</h2>
-              <p className="mt-1 text-sm font-medium text-primary">Food brand</p>
-              <p className="mt-3 text-sm leading-relaxed text-muted">
-                Premium wholesale foods for HORECA, retailers, and distributors —
-                produce, proteins, pantry, and specialty lines sourced through our
-                verified supply network. Ideal partners stock reliable volume with
-                clear cold-chain and quality standards.
-              </p>
-              <ul className="mt-4 space-y-2 text-sm text-dark-gray/80">
-                <li className="flex gap-2">
-                  <Truck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  Regional coverage across UAE, Singapore &amp; key trade hubs
-                </li>
-                <li className="flex gap-2">
-                  <Truck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  Consistent SKUs with wholesale MOQs and trade packaging
-                </li>
-              </ul>
-            </article>
-
-            <article className="rounded-2xl border border-secondary/15 bg-secondary-muted/50 p-6 sm:p-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-white">
-                <Droplets className="h-6 w-6" />
+              <div>
+                <h2 className="text-xl font-bold text-dark-gray">M Fresh</h2>
+                <p className="mt-1 text-sm font-medium text-primary">
+                  Our own brand &amp; private label products
+                </p>
               </div>
-              <h2 className="mt-4 text-xl font-bold text-dark-gray">MR Fresh</h2>
-              <p className="mt-1 text-sm font-medium text-secondary">
-                Cleaning liquid brand
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-muted">
-                Professional cleaning liquids for kitchens, hospitality, and
-                facilities — formulated for everyday commercial use. We work with
-                distributors who can place MR Fresh next to foodservice and
-                facility-care ranges.
-              </p>
-              <ul className="mt-4 space-y-2 text-sm text-dark-gray/80">
-                <li className="flex gap-2">
-                  <Truck className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
-                  Hospitality &amp; commercial cleaning channels
-                </li>
-                <li className="flex gap-2">
-                  <Truck className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
-                  Bulk and retail-ready pack formats for trade partners
-                </li>
-              </ul>
-            </article>
-          </div>
+            </div>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              M Fresh is our proprietary brand offering a growing range of premium
+              food products and private label lines — all bearing the M Fresh logo.
+              From wholesale foods for HORECA, retailers, and distributors to
+              custom private label solutions, we deliver consistent quality with
+              reliable supply through our verified sourcing network.
+            </p>
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              <div className="flex gap-3 rounded-xl border border-border bg-white/60 p-4">
+                <Leaf className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                <div>
+                  <p className="text-sm font-semibold text-dark-gray">M Fresh Brand Products</p>
+                  <p className="mt-1 text-xs text-muted">
+                    Produce, proteins, pantry essentials, and specialty lines under our own brand.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3 rounded-xl border border-border bg-white/60 p-4">
+                <Tag className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                <div>
+                  <p className="text-sm font-semibold text-dark-gray">Private Label</p>
+                  <p className="mt-1 text-xs text-muted">
+                    Custom private label products packaged under the M Fresh logo for trade partners.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3 rounded-xl border border-border bg-white/60 p-4">
+                <Truck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                <div>
+                  <p className="text-sm font-semibold text-dark-gray">Distribution</p>
+                  <p className="mt-1 text-xs text-muted">
+                    Regional coverage across UAE, Singapore &amp; key trade hubs with wholesale MOQs.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 rounded-xl border border-secondary/15 bg-secondary-muted/50 p-4">
+              <div className="flex items-center gap-3">
+                <Package className="h-5 w-5 shrink-0 text-secondary" />
+                <div>
+                  <p className="text-sm font-semibold text-dark-gray">
+                    MR Fresh — Our Cleaning Liquids Line
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted">
+                    Rolling soon to markets. Stay tuned for our professional cleaning
+                    liquids range for kitchens, hospitality, and commercial facilities.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </article>
 
           <div className="mx-auto max-w-2xl rounded-2xl border border-border bg-white p-6 shadow-sm sm:p-8">
             <h3 className="text-lg font-bold text-dark-gray">

@@ -33,9 +33,9 @@ export function Footer() {
 
   return (
     <footer className="relative overflow-hidden border-t border-border bg-gradient-to-b from-secondary to-[#1a1f4a] text-white">
-      <div className="container-main relative py-14 lg:py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="space-y-5 sm:col-span-2 lg:col-span-2">
+      <div className="container-main relative py-8 lg:py-10">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="space-y-4 sm:col-span-2 lg:col-span-1">
             <Logo variant="footer" />
             <p className="max-w-sm text-sm leading-relaxed text-white/70">
               {SITE_TAGLINE}. Your trusted wholesale food marketplace connecting
@@ -76,10 +76,9 @@ export function Footer() {
           )}
           <FooterColumn title="Marketplace" links={FOOTER_LINKS.marketplace} />
           <FooterColumn title="Company" links={FOOTER_LINKS.company} />
-          <FooterColumn title="Join Us" links={FOOTER_LINKS.join} />
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-white/60">
             © {new Date().getFullYear()} {siteName}. All rights reserved.
           </p>

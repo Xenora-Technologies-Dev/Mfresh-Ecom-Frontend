@@ -18,7 +18,7 @@ export function WhatsAppFloat() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const phone = settings?.contact_phone?.replace(/\D/g, "") ?? "971501234567";
+  const phone = settings?.contact_phone?.replace(/\D/g, "") || "971545992255";
   const href = `https://wa.me/${phone}`;
 
   return (
