@@ -50,11 +50,11 @@ export async function getPopularProducts(): Promise<Product[]> {
 }
 
 export async function getNewArrivals(): Promise<Product[]> {
-  return getProducts({ isNew: true, limit: 8 });
+  return getProducts({ isNew: true, limit: 10 });
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
-  return getProducts({ featured: true, limit: 8 });
+  return getProducts({ featured: true, limit: 10 });
 }
 
 export async function getRelatedProducts(

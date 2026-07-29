@@ -83,7 +83,8 @@ export default function ProductsPageContent() {
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["products", filters, page],
-    queryFn: () => getProductsPaginated({ ...filters, page, limit: 12 }),
+    // Page size matches xl:grid-cols-5 so each page fills complete rows (2×5).
+    queryFn: () => getProductsPaginated({ ...filters, page, limit: 10 }),
   });
 
   useEffect(() => {
@@ -191,7 +192,7 @@ export default function ProductsPageContent() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-5">
                   {products.map((product, i) => (
                     <ProductCard key={product.id} product={product} index={i} />
                   ))}

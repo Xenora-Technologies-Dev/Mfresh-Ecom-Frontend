@@ -11,7 +11,8 @@ import { SectionHeader } from "@/components/shared/section-header";
 import { SectionSlider } from "@/components/shared/section-slider";
 import type { Product } from "@/types";
 
-const PRODUCTS_PER_PAGE = 5;
+/** Matches `lg:grid-cols-5` so each slider page is complete rows (2×5). */
+const PRODUCTS_PER_PAGE = 10;
 
 function ProductSliderSection({
   title,
@@ -48,7 +49,7 @@ function ProductSliderSection({
             itemsPerPage={PRODUCTS_PER_PAGE}
             autoPlay
             autoPlayIntervalMs={5000}
-            gridClassName="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-5"
+            gridClassName="grid grid-cols-2 gap-2.5 sm:grid-cols-5 sm:gap-3"
             renderItem={(product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
             )}

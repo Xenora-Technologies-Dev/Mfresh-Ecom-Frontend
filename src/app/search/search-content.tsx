@@ -58,8 +58,8 @@ function SearchResults() {
               View all
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
-            {data.products.slice(0, 4).map((p, i) => (
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-5 sm:gap-3">
+            {data.products.slice(0, 10).map((p, i) => (
               <ProductCard key={p.id} product={p} index={i} />
             ))}
           </div>

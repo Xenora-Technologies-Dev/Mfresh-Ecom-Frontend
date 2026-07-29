@@ -28,11 +28,11 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
-      className={cn("group", className)}
+      className={cn("group h-full", className)}
     >
-      <Link href={`/products/${product.slug}`} className="block">
-        <div className="relative overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary-light/25 group-hover:shadow-md group-hover:shadow-primary/5">
-          <div className="relative aspect-square overflow-hidden bg-primary-muted/40">
+      <Link href={`/products/${product.slug}`} className="flex h-full flex-col">
+        <div className="relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-primary-light/25 group-hover:shadow-md group-hover:shadow-primary/5">
+          <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-primary-muted/40">
             {product.comingSoon || !product.image ? (
               <ProductComingSoonImage
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
@@ -75,63 +75,63 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
             </button>
           </div>
 
-          <div className="space-y-1.5 p-2.5 sm:space-y-2 sm:p-3">
-            {product.categoryName && (
-              <p className="text-[10px] font-medium text-muted">
-                {product.categoryName}
-              </p>
-            )}
+          <div className="flex flex-1 flex-col gap-1 p-2.5 sm:p-3">
+            <p className="h-3.5 truncate text-[10px] font-medium leading-none text-muted">
+              {product.categoryName || "\u00a0"}
+            </p>
 
-            {product.country ? (
-              <div className="flex items-center gap-1.5 text-[10px] text-muted">
-                <CountryFlagIcon country={product.country} size={14} />
-                <span className="truncate">{product.country}</span>
-              </div>
-            ) : null}
+            <div className="flex h-4 items-center gap-1.5 text-[10px] leading-none text-muted">
+              {product.country ? (
+                <>
+                  <CountryFlagIcon country={product.country} size={14} />
+                  <span className="truncate">{product.country}</span>
+                </>
+              ) : (
+                <span className="invisible">—</span>
+              )}
+            </div>
 
-            <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-dark-gray transition-colors group-hover:text-primary sm:text-sm">
+            <h3 className="line-clamp-2 min-h-[2.5rem] text-xs font-semibold leading-snug text-dark-gray transition-colors group-hover:text-primary sm:min-h-[2.625rem] sm:text-sm">
               {product.name}
             </h3>
 
-            <div className="flex items-end justify-between gap-2 pt-0.5">
-              <div className="min-w-0">
-                <p className="text-base font-bold text-primary sm:text-lg">
-                  {product.minPrice === product.maxPrice ? (
-                    <>
-                      <PriceDisplay
-                        price={product.minPrice}
-                        storedCurrency={product.currency}
-                      />
-                      <span className="text-xs font-medium text-muted">
-                        /{product.unit}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <PriceDisplay
-                        price={product.minPrice}
-                        storedCurrency={product.currency}
-                      />
-                      <span className="mx-0.5 text-xs font-normal text-muted">
-                        –
-                      </span>
-                      <PriceDisplay
-                        price={product.maxPrice}
-                        storedCurrency={product.currency}
-                      />
-                      <span className="text-xs font-medium text-muted">
-                        /{product.unit}
-                      </span>
-                    </>
-                  )}
-                </p>
-                <p className="flex items-center gap-1 text-[10px] text-muted">
-                  <Package className="h-3 w-3 shrink-0" />
-                  <span className="truncate">
-                    MOQ: {product.moq}/{product.unit}
-                  </span>
-                </p>
-              </div>
+            <div className="mt-auto min-w-0 pt-1">
+              <p className="truncate text-base font-bold leading-tight text-primary sm:text-lg">
+                {product.minPrice === product.maxPrice ? (
+                  <>
+                    <PriceDisplay
+                      price={product.minPrice}
+                      storedCurrency={product.currency}
+                    />
+                    <span className="text-xs font-medium text-muted">
+                      /{product.unit}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <PriceDisplay
+                      price={product.minPrice}
+                      storedCurrency={product.currency}
+                    />
+                    <span className="mx-0.5 text-xs font-normal text-muted">
+                      –
+                    </span>
+                    <PriceDisplay
+                      price={product.maxPrice}
+                      storedCurrency={product.currency}
+                    />
+                    <span className="text-xs font-medium text-muted">
+                      /{product.unit}
+                    </span>
+                  </>
+                )}
+              </p>
+              <p className="mt-0.5 flex h-4 items-center gap-1 text-[10px] text-muted">
+                <Package className="h-3 w-3 shrink-0" />
+                <span className="truncate">
+                  MOQ: {product.moq}/{product.unit}
+                </span>
+              </p>
             </div>
           </div>
         </div>
