@@ -40,7 +40,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         </div>
       </section>
 
-      <section className="pb-8 pt-3 sm:pb-12 sm:pt-4">
+      <section className="pb-6 pt-3 sm:pb-12 sm:pt-4">
         <div className="container-main">
           <ProductDetailContent product={product} related={related} />
         </div>

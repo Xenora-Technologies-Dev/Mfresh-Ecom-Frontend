@@ -3,6 +3,8 @@ export const SITE_TAGLINE = "Global B2B Food Marketplace";
 export const MFRESH_WEBSITE = "https://www.mfresh.ae";
 export const SITE_DESCRIPTION =
   "Premium B2B food marketplace connecting buyers and verified suppliers across the Middle East, Asia-Pacific, and worldwide.";
+export const PRODUCTION_SITE_URL = "https://mfreshtradehub.com";
+
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3006";
 export const PORTAL_URL =
   process.env.NEXT_PUBLIC_PORTAL_URL ??
@@ -14,6 +16,29 @@ export const ADMIN_PORTAL_URL = PORTAL_URL;
 
 export const STOREFRONT_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3006";
+
+/** Canonical public URL for share links (never Netlify preview domains). */
+export function getPublicSiteUrl(): string {
+  if (typeof window !== "undefined") {
+    const { hostname, origin } = window.location;
+    if (
+      hostname === "mfreshtradehub.com" ||
+      hostname === "www.mfreshtradehub.com"
+    ) {
+      return origin.replace(/\/$/, "");
+    }
+  }
+  const env = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
+  if (
+    env &&
+    !env.includes("netlify.app") &&
+    !env.includes("localhost") &&
+    !env.includes("127.0.0.1")
+  ) {
+    return env;
+  }
+  return PRODUCTION_SITE_URL;
+}
 
 export const COLORS = {
   primary: "#00A651",

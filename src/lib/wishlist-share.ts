@@ -1,8 +1,13 @@
 import type { Product } from "@/types";
-import { MFRESH_WEBSITE, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/constants";
+import {
+  MFRESH_WEBSITE,
+  SITE_NAME,
+  SITE_TAGLINE,
+  getPublicSiteUrl,
+} from "@/lib/constants";
 
 function productUrl(product: Product): string {
-  return `${SITE_URL}/products/${product.slug}`;
+  return `${getPublicSiteUrl()}/products/${product.slug}`;
 }
 
 export function buildWishlistShareText(products: Product[]): string {
@@ -37,13 +42,13 @@ export async function shareWishlistExternally(
   products: Product[],
 ): Promise<"shared" | "copied"> {
   const text = buildWishlistShareText(products);
-  const firstUrl = products[0] ? productUrl(products[0]) : SITE_URL;
 
   if (typeof navigator !== "undefined" && navigator.share) {
     await navigator.share({
       title: "My M Fresh Wishlist",
       text,
-      url: firstUrl,
+      // Prefer share sheet URL attachment only when a single product link is useful;
+      // the full list already contains product URLs in `text`.
     });
     return "shared";
   }

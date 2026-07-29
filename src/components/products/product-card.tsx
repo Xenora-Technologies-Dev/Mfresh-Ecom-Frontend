@@ -95,14 +95,14 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
 
             <div className="flex items-end justify-between gap-2 pt-0.5">
               <div className="min-w-0">
-                <p className="text-sm font-bold text-primary sm:text-base">
+                <p className="text-base font-bold text-primary sm:text-lg">
                   {product.minPrice === product.maxPrice ? (
                     <>
                       <PriceDisplay
                         price={product.minPrice}
                         storedCurrency={product.currency}
                       />
-                      <span className="text-[10px] font-medium text-muted">
+                      <span className="text-xs font-medium text-muted">
                         /{product.unit}
                       </span>
                     </>
@@ -112,14 +112,14 @@ export function ProductCard({ product, index = 0, className }: ProductCardProps)
                         price={product.minPrice}
                         storedCurrency={product.currency}
                       />
-                      <span className="mx-0.5 text-[10px] font-normal text-muted">
+                      <span className="mx-0.5 text-xs font-normal text-muted">
                         –
                       </span>
                       <PriceDisplay
                         price={product.maxPrice}
                         storedCurrency={product.currency}
                       />
-                      <span className="text-[10px] font-medium text-muted">
+                      <span className="text-xs font-medium text-muted">
                         /{product.unit}
                       </span>
                     </>

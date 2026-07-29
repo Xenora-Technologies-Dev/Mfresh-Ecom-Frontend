@@ -91,8 +91,8 @@ export function ProductImageGallery({
 
   if (isComingSoon) {
     return (
-      <div className={cn("w-full max-w-xl", className)}>
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-gray-100 bg-light-gray/40 shadow-sm sm:aspect-square">
+      <div className={cn("w-full", className)}>
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-gray-100 bg-light-gray/40 shadow-sm sm:rounded-2xl sm:aspect-square">
           <ProductComingSoonImage priority sizes="(max-width: 768px) 100vw, 560px" />
         </div>
       </div>
@@ -105,16 +105,16 @@ export function ProductImageGallery({
     <>
       <div
         className={cn(
-          "grid w-full max-w-4xl grid-cols-1 gap-3",
+          "grid w-full grid-cols-1 gap-2 sm:gap-3",
           thumbs.length > 1 &&
-            "sm:grid-cols-[minmax(0,1.4fr)_minmax(140px,0.65fr)]",
+            "sm:grid-cols-[minmax(0,1.4fr)_minmax(120px,0.65fr)]",
           className,
         )}
       >
         <button
           type="button"
           onClick={() => openModal(0)}
-          className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-gray-100 bg-light-gray/40 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:aspect-square"
+          className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-gray-100 bg-light-gray/40 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:aspect-square sm:rounded-2xl"
           aria-label={`View ${alt} full size`}
         >
           <Image
@@ -123,20 +123,20 @@ export function ProductImageGallery({
             fill
             className="object-contain p-1"
             priority
-            sizes="(max-width: 640px) 100vw, 480px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 480px"
             unoptimized
           />
         </button>
 
         {thumbs.length > 1 && (
-          <div className="grid grid-cols-4 gap-2 sm:grid-cols-2 sm:content-start">
+          <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-2 sm:content-start sm:gap-2">
             {thumbs.map((src, i) => (
               <button
                 key={`${src}-${i}`}
                 type="button"
                 onClick={() => openModal(i)}
                 className={cn(
-                  "relative aspect-square overflow-hidden rounded-xl border-2 bg-light-gray/30 transition-colors",
+                  "relative aspect-square overflow-hidden rounded-lg border-2 bg-light-gray/30 transition-colors sm:rounded-xl",
                   i === 0
                     ? "border-primary ring-2 ring-primary/20"
                     : "border-gray-100 hover:border-gray-200",
