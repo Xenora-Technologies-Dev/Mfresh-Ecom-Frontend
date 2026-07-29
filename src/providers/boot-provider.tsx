@@ -86,13 +86,18 @@ export function BootProvider({ children }: { children: React.ReactNode }) {
     <BootContext.Provider value={value}>
       {!isBooted && (
         <div
-          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center gap-4 bg-[#F3FAF5]"
+          className="fixed inset-0 z-[99999] flex flex-col items-center justify-center gap-5 bg-[#F3FAF5]"
           role="status"
           aria-live="polite"
-          aria-label="Loading"
+          aria-label="Loading M Fresh Trade Hub"
         >
           <div className="h-11 w-11 animate-spin rounded-full border-[3px] border-primary/25 border-t-primary" />
-          <p className="text-sm font-medium text-dark-gray/70">Loading M Fresh…</p>
+          <p className="flex items-center gap-1.5 overflow-hidden text-base font-semibold tracking-tight text-dark-gray sm:text-lg">
+            <span className="animate-boot-from-left inline-block">M Fresh</span>
+            <span className="animate-boot-from-right inline-block text-primary">
+              Trade Hub
+            </span>
+          </p>
         </div>
       )}
       {children}

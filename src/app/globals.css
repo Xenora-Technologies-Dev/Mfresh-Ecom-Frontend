@@ -166,6 +166,36 @@ body {
   animation: fade-slide 0.5s ease-out;
 }
 
+@keyframes boot-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-2.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes boot-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(2.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-boot-from-left {
+  animation: boot-from-left 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-boot-from-right {
+  animation: boot-from-right 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
 @keyframes mfreshy-wiggle {
   0%, 100% { transform: rotate(0deg); }
   20% { transform: rotate(-6deg); }

@@ -102,7 +102,7 @@ export function GetStartedModal() {
             <span className="relative h-8 w-[116px] sm:h-9 sm:w-[132px]">
               <Image
                 src={DEFAULT_LOGO_PATH}
-                alt="M Fresh"
+                alt="M Fresh Trade Hub"
                 fill
                 className="object-contain"
                 unoptimized
@@ -115,8 +115,25 @@ export function GetStartedModal() {
             id="get-started-title"
             className="text-center text-xl font-bold tracking-tight text-dark-gray sm:text-2xl"
           >
-            Welcome to{" "}
-            <span className="text-primary">MFresh.ae</span>
+            <span className="block">Welcome to</span>
+            <span className="mt-1 flex items-center justify-center gap-0 overflow-hidden text-primary">
+              <motion.span
+                initial={{ opacity: 0, x: -28 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: "spring", stiffness: 280, damping: 24, delay: 0.08 }}
+                className="inline-block"
+              >
+                MFresh
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, x: 28 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: "spring", stiffness: 280, damping: 24, delay: 0.14 }}
+                className="inline-block"
+              >
+                TradeHub.com
+              </motion.span>
+            </span>
           </h2>
           <p className="mt-2 text-center text-sm text-muted">
             How would you like to get started?
