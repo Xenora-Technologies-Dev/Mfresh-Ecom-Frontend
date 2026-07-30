@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { ProductComingSoonImage } from "@/components/products/product-coming-soon-image";
@@ -21,6 +21,7 @@ interface ProductImageGalleryProps {
 }
 
 const AUTO_SLIDE_MS = 10_000;
+const SWIPE_THRESHOLD_PX = 48;
 
 export function ProductImageGallery({
   displayImage,
@@ -52,6 +53,9 @@ export function ProductImageGallery({
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalIndex, setModalIndex] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const didSwipe = useRef(false);
 
   const openModal = (index: number) => {
     if (isComingSoon || gallery.length === 0) return;
@@ -66,6 +70,38 @@ export function ProductImageGallery({
   const goNext = useCallback(() => {
     setModalIndex((i) => (i + 1) % gallery.length);
   }, [gallery.length]);
+
+  const handleSwipeStart = useCallback((clientX: number, clientY: number) => {
+    touchStartX.current = clientX;
+    touchStartY.current = clientY;
+    didSwipe.current = false;
+  }, []);
+
+  const handleSwipeEnd = useCallback(
+    (clientX: number, clientY: number) => {
+      if (touchStartX.current == null || touchStartY.current == null) return;
+      if (gallery.length <= 1) {
+        touchStartX.current = null;
+        touchStartY.current = null;
+        return;
+      }
+
+      const dx = clientX - touchStartX.current;
+      const dy = clientY - touchStartY.current;
+      touchStartX.current = null;
+      touchStartY.current = null;
+
+      // Prefer horizontal swipes; ignore mostly-vertical gestures
+      if (Math.abs(dx) < SWIPE_THRESHOLD_PX || Math.abs(dx) < Math.abs(dy)) {
+        return;
+      }
+
+      didSwipe.current = true;
+      if (dx < 0) goNext();
+      else goPrev();
+    },
+    [gallery.length, goNext, goPrev],
+  );
 
   useEffect(() => {
     if (!modalOpen || gallery.length <= 1) return;
@@ -159,11 +195,25 @@ export function ProductImageGallery({
 
       {modalOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-3 sm:p-6"
+          className="fixed inset-0 z-[100] flex touch-pan-y items-center justify-center bg-black/85 p-3 sm:p-6"
           role="dialog"
           aria-modal="true"
           aria-label="Product image gallery"
-          onClick={() => setModalOpen(false)}
+          onClick={() => {
+            if (didSwipe.current) {
+              didSwipe.current = false;
+              return;
+            }
+            setModalOpen(false);
+          }}
+          onTouchStart={(e) => {
+            const t = e.changedTouches[0];
+            if (t) handleSwipeStart(t.clientX, t.clientY);
+          }}
+          onTouchEnd={(e) => {
+            const t = e.changedTouches[0];
+            if (t) handleSwipeEnd(t.clientX, t.clientY);
+          }}
         >
           <button
             type="button"
@@ -202,18 +252,27 @@ export function ProductImageGallery({
           )}
 
           <div
-            className="relative flex h-[min(80vh,720px)] w-full max-w-5xl items-center justify-center"
+            className="relative flex h-[min(80vh,720px)] w-full max-w-5xl touch-pan-y items-center justify-center"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={(e) => {
+              const t = e.changedTouches[0];
+              if (t) handleSwipeStart(t.clientX, t.clientY);
+            }}
+            onTouchEnd={(e) => {
+              const t = e.changedTouches[0];
+              if (t) handleSwipeEnd(t.clientX, t.clientY);
+            }}
           >
-            <div className="relative h-full w-full">
+            <div className="relative h-full w-full select-none">
               <Image
                 src={gallery[modalIndex]!}
                 alt={`${alt} — image ${modalIndex + 1}`}
                 fill
-                className="object-contain"
+                className="pointer-events-none object-contain"
                 sizes="(max-width: 768px) 100vw, 90vw"
                 unoptimized
                 priority
+                draggable={false}
               />
             </div>
           </div>
