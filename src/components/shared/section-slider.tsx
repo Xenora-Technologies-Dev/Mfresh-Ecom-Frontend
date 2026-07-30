@@ -28,27 +28,35 @@ export function SectionSlider<T>({
 }: SectionSliderProps<T>) {
   const [page, setPage] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [ready, setReady] = useState(false);
   const pageRef = useRef(0);
 
-  const totalPages = Math.max(1, Math.ceil(items.length / itemsPerPage));
-  const currentPage = Math.min(page, totalPages - 1);
+  const pages = useMemo(() => {
+    const chunks: T[][] = [];
+    for (let i = 0; i < items.length; i += itemsPerPage) {
+      chunks.push(items.slice(i, i + itemsPerPage));
+    }
+    return chunks.length > 0 ? chunks : [[] as T[]];
+  }, [items, itemsPerPage]);
 
+  const totalPages = Math.max(1, pages.length);
+  const currentPage = Math.min(page, totalPages - 1);
   pageRef.current = currentPage;
 
-  const pageItems = useMemo(() => {
-    const start = currentPage * itemsPerPage;
-    return items.slice(start, start + itemsPerPage);
-  }, [items, currentPage, itemsPerPage]);
+  // Enable transition only after first paint so the track isn't mid-slide on mount
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
-  const emptyCount =
-    fillEmptySlots && pageItems.length > 0
-      ? Math.max(0, itemsPerPage - pageItems.length)
-      : 0;
+  useEffect(() => {
+    if (page > totalPages - 1) setPage(totalPages - 1);
+  }, [page, totalPages]);
 
   useEffect(() => {
     if (!autoPlay || totalPages <= 1 || paused) return;
     const timer = setInterval(() => {
-      setPage((p) => (pageRef.current + 1) % totalPages);
+      setPage((pageRef.current + 1) % totalPages);
     }, autoPlayIntervalMs);
     return () => clearInterval(timer);
   }, [autoPlay, autoPlayIntervalMs, totalPages, paused]);
@@ -64,13 +72,40 @@ export function SectionSlider<T>({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className={gridClassName}>
-        {pageItems.map((item, i) =>
-          renderItem(item, currentPage * itemsPerPage + i),
-        )}
-        {Array.from({ length: emptyCount }).map((_, i) => (
-          <div key={`empty-${i}`} className="invisible min-h-[7.5rem]" aria-hidden />
-        ))}
+      <div className="overflow-hidden">
+        <div
+          className={cn(
+            "flex will-change-transform",
+            ready && "transition-transform duration-500 ease-out",
+          )}
+          style={{ transform: `translate3d(-${currentPage * 100}%, 0, 0)` }}
+        >
+          {pages.map((pageItems, pageIndex) => {
+            const emptyCount =
+              fillEmptySlots && pageItems.length > 0
+                ? Math.max(0, itemsPerPage - pageItems.length)
+                : 0;
+
+            return (
+              <div
+                key={pageIndex}
+                className={cn("w-full shrink-0", gridClassName)}
+                aria-hidden={pageIndex !== currentPage}
+              >
+                {pageItems.map((item, i) =>
+                  renderItem(item, pageIndex * itemsPerPage + i),
+                )}
+                {Array.from({ length: emptyCount }).map((_, i) => (
+                  <div
+                    key={`empty-${pageIndex}-${i}`}
+                    className="invisible min-h-[7.5rem]"
+                    aria-hidden
+                  />
+                ))}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {totalPages > 1 && (

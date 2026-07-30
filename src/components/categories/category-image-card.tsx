@@ -10,13 +10,38 @@ interface CategoryImageCardProps {
   category: Category;
   index?: number;
   className?: string;
+  /** Entrance animation — disable inside carousels so slides don't re-init */
+  animate?: boolean;
 }
 
 export function CategoryImageCard({
   category,
   index = 0,
   className,
+  animate = true,
 }: CategoryImageCardProps) {
+  const card = (
+    <Link href={`/categories/${category.slug}`} className="block">
+      <div className="relative aspect-square overflow-hidden rounded-lg border border-border/60 shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md">
+        <Image
+          src={category.image}
+          alt={category.name}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+        <p className="absolute inset-x-0 bottom-0 px-2 py-2 text-center text-xs font-semibold text-white sm:px-2.5 sm:py-2.5 sm:text-sm">
+          {category.name}
+        </p>
+      </div>
+    </Link>
+  );
+
+  if (!animate) {
+    return <div className={cn("group", className)}>{card}</div>;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -25,21 +50,7 @@ export function CategoryImageCard({
       transition={{ duration: 0.35, delay: index * 0.04 }}
       className={cn("group", className)}
     >
-      <Link href={`/categories/${category.slug}`} className="block">
-        <div className="relative aspect-square overflow-hidden rounded-lg border border-border/60 shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md">
-          <Image
-            src={category.image}
-            alt={category.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-          <p className="absolute inset-x-0 bottom-0 px-2 py-2 text-center text-xs font-semibold text-white sm:px-2.5 sm:py-2.5 sm:text-sm">
-            {category.name}
-          </p>
-        </div>
-      </Link>
+      {card}
     </motion.div>
   );
 }

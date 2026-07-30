@@ -350,11 +350,9 @@ export function ProductDetailContent({ product, related }: ProductDetailContentP
           <h2 className="mb-4 text-lg font-bold text-dark-gray sm:mb-6 sm:text-xl lg:text-2xl">
             You might be interested in
           </h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:gap-4 [&::-webkit-scrollbar]:hidden">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-5">
             {related.map((p, i) => (
-              <div key={p.id} className="w-[160px] shrink-0 sm:w-[220px] lg:w-[240px]">
-                <ProductCard product={p} index={i} />
-              </div>
+              <ProductCard key={p.id} product={p} index={i} />
             ))}
           </div>
         </div>

@@ -7,6 +7,7 @@ import { PromoMessageBar } from "@/components/layout/promo-message-bar";
 import { CountryWelcomeBanner } from "@/components/layout/country-welcome-banner";
 import { GetStartedModal } from "@/components/layout/get-started-modal";
 import { FloatingWidgets } from "@/components/layout/floating-widgets";
+import { NavigationCanvas } from "@/components/layout/navigation-canvas";
 
 /** Paths that render their own clean auth/dashboard layout without the storefront chrome. */
 const CHROME_LESS_PREFIXES = ["/login", "/sign-up", "/onboarding", "/buyer", "/seller"];
@@ -30,7 +31,9 @@ export function ConditionalChrome({ children }: { children: React.ReactNode }) {
       <Header />
       <CountryWelcomeBanner />
       <GetStartedModal />
-      <main className="flex-1">{children}</main>
+      <main className="flex flex-1 flex-col">
+        <NavigationCanvas>{children}</NavigationCanvas>
+      </main>
       <Footer />
       <FloatingWidgets />
     </>

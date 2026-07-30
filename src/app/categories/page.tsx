@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { PageLoader } from "@/components/shared/page-loader";
 import CategoriesPageContent from "./categories-content";
 
 export const metadata = {
@@ -8,7 +9,7 @@ export const metadata = {
 
 export default function CategoriesPage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-muted">Loading...</div>}>
+    <Suspense fallback={<PageLoader />}>
       <CategoriesPageContent />
     </Suspense>
   );

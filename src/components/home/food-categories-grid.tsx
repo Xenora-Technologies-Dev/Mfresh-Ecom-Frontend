@@ -6,8 +6,11 @@ import { CategoryImageCard } from "@/components/categories/category-image-card";
 import { AnimatedSection } from "@/components/shared/animated-section";
 import { SectionSlider } from "@/components/shared/section-slider";
 import { SectionHeader } from "@/components/shared/section-header";
+import { Skeleton } from "@/components/shared/skeletons";
 
 const CATEGORIES_PER_PAGE = 10;
+const CATEGORY_GRID =
+  "grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5 xl:grid-cols-6";
 
 export function FoodCategoriesGrid() {
   const { data: categories = [], isLoading } = useQuery({
@@ -28,14 +31,23 @@ export function FoodCategoriesGrid() {
         />
 
         {isLoading ? (
-          <p className="text-center text-muted">Loading categories...</p>
+          <div className={CATEGORY_GRID}>
+            {Array.from({ length: CATEGORIES_PER_PAGE }).map((_, i) => (
+              <Skeleton key={i} className="aspect-square rounded-lg" />
+            ))}
+          </div>
         ) : (
           <SectionSlider
             items={categories}
             itemsPerPage={CATEGORIES_PER_PAGE}
-            gridClassName="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5 xl:grid-cols-6"
+            gridClassName={CATEGORY_GRID}
             renderItem={(cat, i) => (
-              <CategoryImageCard key={cat.id} category={cat} index={i} />
+              <CategoryImageCard
+                key={cat.id}
+                category={cat}
+                index={i}
+                animate={false}
+              />
             )}
           />
         )}

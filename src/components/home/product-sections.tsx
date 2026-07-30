@@ -9,10 +9,13 @@ import { ProductCard } from "@/components/products/product-card";
 import { AnimatedSection } from "@/components/shared/animated-section";
 import { SectionHeader } from "@/components/shared/section-header";
 import { SectionSlider } from "@/components/shared/section-slider";
+import { ProductGridSkeleton } from "@/components/shared/skeletons";
 import type { Product } from "@/types";
 
-/** One carousel row of 5 (matches previous homepage slider). */
+/** One carousel row of 5 (matches product listing card size). */
 const PRODUCTS_PER_PAGE = 5;
+const PRODUCT_GRID =
+  "grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-5";
 
 function ProductSliderSection({
   title,
@@ -42,16 +45,21 @@ function ProductSliderSection({
       <div className="container-main">
         <SectionHeader title={title} subtitle={subtitle} href={href} />
         {isLoading ? (
-          <p className="text-center text-muted">Loading products...</p>
+          <ProductGridSkeleton count={PRODUCTS_PER_PAGE} />
         ) : (
           <SectionSlider
             items={products}
             itemsPerPage={PRODUCTS_PER_PAGE}
             autoPlay
             autoPlayIntervalMs={5000}
-            gridClassName="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-5"
+            gridClassName={PRODUCT_GRID}
             renderItem={(product, i) => (
-              <ProductCard key={product.id} product={product} index={i} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                index={i}
+                animate={false}
+              />
             )}
           />
         )}

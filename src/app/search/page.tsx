@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { PageLoader } from "@/components/shared/page-loader";
 import SearchPageContent from "./search-content";
 
 export const metadata = {
@@ -8,7 +9,7 @@ export const metadata = {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-muted">Loading...</div>}>
+    <Suspense fallback={<PageLoader />}>
       <SearchPageContent />
     </Suspense>
   );
