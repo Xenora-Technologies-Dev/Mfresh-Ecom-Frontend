@@ -14,7 +14,10 @@ import { SectionSlider } from "@/components/shared/section-slider";
 import { Skeleton } from "@/components/shared/skeletons";
 import type { Country } from "@/types";
 
-const COUNTRIES_PER_PAGE = 10;
+const COUNTRY_COLUMNS = { base: 2, sm: 5 } as const;
+const COUNTRY_ROWS = 2;
+const COUNTRY_GRID =
+  "grid min-h-[16.5rem] grid-cols-2 content-start gap-3 sm:min-h-[17.5rem] sm:grid-cols-5 sm:gap-4";
 
 function CountryCard({ country }: { country: Country }) {
   return (
@@ -80,18 +83,21 @@ export function CountriesSection() {
         />
         {isLoading && apiCountries.length === 0 ? (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <Skeleton key={i} className="h-28 rounded-2xl" />
-            ))}
+            {Array.from({ length: COUNTRY_COLUMNS.base * COUNTRY_ROWS }).map(
+              (_, i) => (
+                <Skeleton key={i} className="h-28 rounded-2xl" />
+              ),
+            )}
           </div>
         ) : (
           <SectionSlider
             items={countries}
-            itemsPerPage={COUNTRIES_PER_PAGE}
+            columns={COUNTRY_COLUMNS}
+            rows={COUNTRY_ROWS}
             autoPlay
             autoPlayIntervalMs={5000}
             fillEmptySlots
-            gridClassName="grid min-h-[16.5rem] grid-cols-2 content-start gap-3 sm:min-h-[17.5rem] sm:grid-cols-5 sm:gap-4"
+            gridClassName={COUNTRY_GRID}
             renderItem={(country) => (
               <CountryCard key={country.id} country={country} />
             )}

@@ -13,6 +13,9 @@ import { cn } from "@/lib/utils";
 const LOGO_BOX =
   "relative block h-[48px] w-[112px] shrink-0 overflow-visible sm:h-[60px] sm:w-[140px] lg:h-[68px] lg:w-[158px]";
 
+const FOOTER_LOGO_BOX =
+  "relative block h-[36px] w-[84px] shrink-0 overflow-visible sm:h-[42px] sm:w-[98px]";
+
 export function Logo({
   className,
   variant = "default",
@@ -23,6 +26,7 @@ export function Logo({
 }) {
   const { theme, isReady } = useTheme();
   const pathname = usePathname();
+  const boxClass = variant === "footer" ? FOOTER_LOGO_BOX : LOGO_BOX;
 
   const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (pathname === "/") {
@@ -32,7 +36,7 @@ export function Logo({
   };
 
   if (!isReady) {
-    return <div className={cn(LOGO_BOX, className)} aria-hidden />;
+    return <div className={cn(boxClass, className)} aria-hidden />;
   }
 
   if (theme.logoStyle === "image") {
@@ -43,12 +47,12 @@ export function Logo({
         className={cn(
           "group inline-flex w-fit shrink-0 items-center overflow-visible",
           variant === "footer" &&
-            "rounded-xl bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-white/20",
+            "rounded-lg bg-white px-2 py-1 shadow-sm ring-1 ring-white/20",
           className,
         )}
         aria-label="MFresh home"
       >
-        <span className={LOGO_BOX}>
+        <span className={boxClass}>
           {/* Native img: reliable for /public assets; avoids Next Image + bad theme URLs */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

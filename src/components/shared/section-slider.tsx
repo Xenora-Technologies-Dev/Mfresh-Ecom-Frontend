@@ -2,11 +2,25 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  useResponsivePageSize,
+  type BreakpointColumns,
+} from "@/hooks/use-responsive-page-size";
 import { cn } from "@/lib/utils";
+
+const FALLBACK_COLUMNS: BreakpointColumns = { base: 1 };
 
 interface SectionSliderProps<T> {
   items: T[];
-  itemsPerPage: number;
+  /** Fixed page size (ignored when `columns` + `rows` are set). */
+  itemsPerPage?: number;
+  /**
+   * Column counts matching the grid breakpoints. Page size becomes
+   * columns × rows so every page fills complete rows before the next slide.
+   */
+  columns?: BreakpointColumns;
+  /** Rows per slide when using `columns`. Defaults to 2. */
+  rows?: number;
   renderItem: (item: T, index: number) => React.ReactNode;
   gridClassName?: string;
   className?: string;
@@ -18,7 +32,9 @@ interface SectionSliderProps<T> {
 
 export function SectionSlider<T>({
   items,
-  itemsPerPage,
+  itemsPerPage: fixedPerPage = 8,
+  columns,
+  rows = 2,
   renderItem,
   gridClassName = "grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4",
   className,
@@ -26,6 +42,12 @@ export function SectionSlider<T>({
   autoPlayIntervalMs = 5000,
   fillEmptySlots = false,
 }: SectionSliderProps<T>) {
+  const responsivePerPage = useResponsivePageSize(
+    columns ?? FALLBACK_COLUMNS,
+    columns ? rows : 1,
+  );
+  const itemsPerPage = columns ? responsivePerPage : fixedPerPage;
+
   const [page, setPage] = useState(0);
   const [paused, setPaused] = useState(false);
   const [ready, setReady] = useState(false);
@@ -48,6 +70,10 @@ export function SectionSlider<T>({
     const id = requestAnimationFrame(() => setReady(true));
     return () => cancelAnimationFrame(id);
   }, []);
+
+  useEffect(() => {
+    setPage(0);
+  }, [itemsPerPage]);
 
   useEffect(() => {
     if (page > totalPages - 1) setPage(totalPages - 1);

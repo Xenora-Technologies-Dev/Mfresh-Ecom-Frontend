@@ -8,7 +8,9 @@ import { SectionSlider } from "@/components/shared/section-slider";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Skeleton } from "@/components/shared/skeletons";
 
-const CATEGORIES_PER_PAGE = 10;
+/** Matches CATEGORY_GRID breakpoints — page size = columns × 2 rows. */
+const CATEGORY_COLUMNS = { base: 2, sm: 4, lg: 5, xl: 6 } as const;
+const CATEGORY_ROWS = 2;
 const CATEGORY_GRID =
   "grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-5 xl:grid-cols-6";
 
@@ -32,14 +34,17 @@ export function FoodCategoriesGrid() {
 
         {isLoading ? (
           <div className={CATEGORY_GRID}>
-            {Array.from({ length: CATEGORIES_PER_PAGE }).map((_, i) => (
-              <Skeleton key={i} className="aspect-square rounded-lg" />
-            ))}
+            {Array.from({ length: CATEGORY_COLUMNS.base * CATEGORY_ROWS }).map(
+              (_, i) => (
+                <Skeleton key={i} className="aspect-square rounded-lg" />
+              ),
+            )}
           </div>
         ) : (
           <SectionSlider
             items={categories}
-            itemsPerPage={CATEGORIES_PER_PAGE}
+            columns={CATEGORY_COLUMNS}
+            rows={CATEGORY_ROWS}
             gridClassName={CATEGORY_GRID}
             renderItem={(cat, i) => (
               <CategoryImageCard

@@ -26,34 +26,33 @@ export function Footer() {
   const phone = settings?.contact_phone;
   const address = settings?.support_address;
 
-  const categoryLinks = categories.slice(0, 6).map((cat) => ({
+  const categoryLinks = categories.slice(0, 5).map((cat) => ({
     href: `/categories/${cat.slug}`,
     label: cat.name,
   }));
 
   return (
     <footer className="relative overflow-hidden border-t border-border bg-gradient-to-b from-secondary to-[#1a1f4a] text-white">
-      <div className="container-main relative py-8 lg:py-10">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-4 sm:col-span-2 lg:col-span-1">
+      <div className="container-main relative py-5 sm:py-6 lg:py-7">
+        <div className="grid gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-6">
+          <div className="space-y-2.5 sm:col-span-2 lg:col-span-1">
             <Logo variant="footer" />
-            <p className="max-w-sm text-sm leading-relaxed text-white/70">
-              {SITE_TAGLINE}. Your trusted wholesale food marketplace connecting
-              buyers with premium products worldwide.
+            <p className="max-w-sm text-xs leading-relaxed text-white/65 sm:text-[13px]">
+              {SITE_TAGLINE}. Wholesale food marketplace for buyers worldwide.
             </p>
-            <div className="space-y-2.5 text-sm text-white/70">
+            <div className="space-y-1.5 text-xs text-white/65 sm:text-[13px]">
               {address && (
-                <p className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                    <MapPin className="h-4 w-4 text-primary-light" />
+                <p className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white/10">
+                    <MapPin className="h-3 w-3 text-primary-light" />
                   </span>
-                  {address}
+                  <span className="leading-snug">{address}</span>
                 </p>
               )}
               {email && (
-                <p className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                    <Mail className="h-4 w-4 text-primary-light" />
+                <p className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white/10">
+                    <Mail className="h-3 w-3 text-primary-light" />
                   </span>
                   <a href={`mailto:${email}`} className="hover:text-white">
                     {email}
@@ -61,9 +60,9 @@ export function Footer() {
                 </p>
               )}
               {phone && (
-                <p className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                    <Phone className="h-4 w-4 text-primary-light" />
+                <p className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white/10">
+                    <Phone className="h-3 w-3 text-primary-light" />
                   </span>
                   {phone}
                 </p>
@@ -78,16 +77,16 @@ export function Footer() {
           <FooterColumn title="Company" links={FOOTER_LINKS.company} />
         </div>
 
-        <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-white/60">
+        <div className="mt-5 flex flex-col gap-2.5 border-t border-white/10 pt-4 sm:mt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-white/55">
             © {new Date().getFullYear()} {siteName}. All rights reserved.
           </p>
-          <div className="flex flex-wrap gap-6">
+          <div className="flex flex-wrap gap-4">
             {FOOTER_LINKS.legal.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-white/60 transition-colors hover:text-white"
+                className="text-xs text-white/55 transition-colors hover:text-white"
               >
                 {link.label}
               </Link>
@@ -108,10 +107,10 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white/90">
+      <h3 className="mb-2.5 text-[11px] font-semibold uppercase tracking-wider text-white/85">
         {title}
       </h3>
-      <ul className="space-y-2.5">
+      <ul className="space-y-1.5">
         {links.map((link) => {
           const external =
             link.href.startsWith("http") || link.href.includes("/login");
@@ -122,14 +121,14 @@ function FooterColumn({
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-white/60 transition-colors hover:text-primary-light"
+                  className="text-xs text-white/60 transition-colors hover:text-primary-light sm:text-[13px]"
                 >
                   {link.label}
                 </a>
               ) : (
                 <Link
                   href={link.href}
-                  className="text-sm text-white/60 transition-colors hover:text-primary-light"
+                  className="text-xs text-white/60 transition-colors hover:text-primary-light sm:text-[13px]"
                 >
                   {link.label}
                 </Link>

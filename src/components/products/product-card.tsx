@@ -87,19 +87,19 @@ export function ProductCard({
             </div>
           ) : null}
 
-          <h3 className="line-clamp-2 text-xs font-semibold leading-snug text-dark-gray transition-colors group-hover:text-primary sm:text-sm">
+          <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-dark-gray transition-colors group-hover:text-primary sm:text-base">
             {product.name}
           </h3>
 
           <div className="min-w-0 pt-0.5">
-            <p className="flex flex-wrap items-baseline gap-x-0.5 text-[13px] font-bold leading-snug text-primary sm:text-base lg:text-lg">
+            <p className="flex flex-wrap items-baseline gap-x-0.5 text-base font-bold leading-snug text-primary sm:text-lg lg:text-xl">
               {product.minPrice === product.maxPrice ? (
                 <>
                   <PriceDisplay
                     price={product.minPrice}
                     storedCurrency={product.currency}
                   />
-                  <span className="text-[10px] font-medium text-muted sm:text-xs">
+                  <span className="text-xs font-medium text-muted sm:text-sm">
                     /{product.unit}
                   </span>
                 </>
@@ -109,14 +109,14 @@ export function ProductCard({
                     price={product.minPrice}
                     storedCurrency={product.currency}
                   />
-                  <span className="mx-0.5 text-[10px] font-normal text-muted sm:text-xs">
+                  <span className="mx-0.5 text-xs font-normal text-muted sm:text-sm">
                     –
                   </span>
                   <PriceDisplay
                     price={product.maxPrice}
                     storedCurrency={product.currency}
                   />
-                  <span className="text-[10px] font-medium text-muted sm:text-xs">
+                  <span className="text-xs font-medium text-muted sm:text-sm">
                     /{product.unit}
                   </span>
                 </>
