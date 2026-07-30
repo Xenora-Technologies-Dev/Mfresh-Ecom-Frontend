@@ -19,13 +19,13 @@ export function ProductCardSkeleton() {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-lg border border-gray-100 bg-white">
       <Skeleton className="aspect-square w-full shrink-0 rounded-none" />
-      <div className="flex flex-1 flex-col gap-0.5 p-2 sm:p-2.5">
-        <Skeleton className="h-3.5 w-2/3" />
-        <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="min-h-[2.75rem] w-full sm:min-h-[3rem]" />
-        <div className="mt-auto space-y-1 pt-1">
+      <div className="flex flex-col gap-0.5 p-1.5 sm:p-2">
+        <Skeleton className="h-3 w-2/3" />
+        <Skeleton className="h-3 w-1/2" />
+        <Skeleton className="h-8 w-full" />
+        <div className="space-y-1">
           <Skeleton className="h-5 w-1/3" />
-          <Skeleton className="h-4 w-2/5" />
+          <Skeleton className="h-3.5 w-2/5" />
         </div>
       </div>
     </div>

@@ -75,29 +75,23 @@ export function ProductCard({
           </button>
         </div>
 
-        <div className="flex flex-1 flex-col gap-0.5 p-2 sm:p-2.5">
-          <p className="h-3.5 truncate text-[10px] font-medium leading-none text-muted">
+        <div className="flex flex-col gap-0.5 p-1.5 sm:p-2">
+          <p className="truncate text-[10px] font-medium leading-tight text-muted">
             {product.categoryName || "\u00a0"}
           </p>
 
-          <div className="flex h-4 items-center gap-1.5 text-[10px] leading-none text-muted">
-            {product.country ? (
-              <>
-                <CountryFlagIcon country={product.country} size={14} />
-                <span className="truncate">{product.country}</span>
-              </>
-            ) : (
-              <span className="invisible" aria-hidden>
-                —
-              </span>
-            )}
-          </div>
+          {product.country ? (
+            <div className="flex items-center gap-1.5 text-[10px] leading-tight text-muted">
+              <CountryFlagIcon country={product.country} size={14} />
+              <span className="truncate">{product.country}</span>
+            </div>
+          ) : null}
 
-          <h3 className="line-clamp-2 min-h-[2.75rem] text-sm font-semibold leading-snug text-dark-gray transition-colors group-hover:text-primary sm:min-h-[3rem] sm:text-base">
+          <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-dark-gray transition-colors group-hover:text-primary sm:text-base">
             {product.name}
           </h3>
 
-          <div className="mt-auto min-w-0 pt-1">
+          <div className="min-w-0">
             <p className="flex flex-wrap items-baseline gap-x-0.5 text-base font-bold leading-snug text-primary sm:text-lg lg:text-xl">
               {product.minPrice === product.maxPrice ? (
                 <>
@@ -128,7 +122,7 @@ export function ProductCard({
                 </>
               )}
             </p>
-            <p className="mt-0.5 flex h-4 items-center gap-1 text-[10px] leading-none text-muted">
+            <p className="mt-0.5 flex items-center gap-1 text-[10px] leading-tight text-muted">
               <Package className="h-3 w-3 shrink-0" />
               <span className="truncate">
                 MOQ: {product.moq} {product.unit}
