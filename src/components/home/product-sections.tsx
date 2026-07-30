@@ -12,9 +12,9 @@ import { SectionSlider } from "@/components/shared/section-slider";
 import { ProductGridSkeleton } from "@/components/shared/skeletons";
 import type { Product } from "@/types";
 
-/** Matches PRODUCT_GRID — page size = columns × 2 full rows. */
+/** Single-row carousel (matches product listing card width). */
 const PRODUCT_COLUMNS = { base: 2, lg: 5 } as const;
-const PRODUCT_ROWS = 2;
+const PRODUCT_ROWS = 1;
 const PRODUCT_GRID =
   "grid grid-cols-2 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-5";
 
@@ -46,7 +46,7 @@ function ProductSliderSection({
       <div className="container-main">
         <SectionHeader title={title} subtitle={subtitle} href={href} />
         {isLoading ? (
-          <ProductGridSkeleton count={PRODUCT_COLUMNS.base * PRODUCT_ROWS} />
+          <ProductGridSkeleton count={PRODUCT_COLUMNS.lg} />
         ) : (
           <SectionSlider
             items={products}
