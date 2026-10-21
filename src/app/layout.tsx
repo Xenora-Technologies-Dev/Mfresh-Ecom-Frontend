@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ApiAuthProvider } from "@/providers/api-auth-provider";
 import { MainLayout } from "@/components/layout/main-layout";
 import { QueryProvider } from "@/providers/query-provider";
 import { ToastProvider } from "@/providers/toast-provider";
@@ -66,6 +67,7 @@ export default async function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans antialiased text-dark-gray bg-fresh-mint">
         <ClerkProvider>
+          <ApiAuthProvider>
           <QueryProvider>
             <ToastProvider />
             <CurrencyRatesProvider>
@@ -76,6 +78,7 @@ export default async function RootLayout({
               </BootProvider>
             </CurrencyRatesProvider>
           </QueryProvider>
+          </ApiAuthProvider>
         </ClerkProvider>
       </body>
     </html>

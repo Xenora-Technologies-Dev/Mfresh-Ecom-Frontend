@@ -18,7 +18,7 @@ export function RegistrationCTA() {
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10" />
             <div className="relative">
               <h3 className="text-2xl font-bold text-white sm:text-3xl">
-                Start Buying Today
+                Start sourcing today
               </h3>
               <p className="mt-3 max-w-md text-white/85 leading-relaxed">
                 Register as a buyer to access wholesale pricing, verified

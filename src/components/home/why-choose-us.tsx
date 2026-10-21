@@ -38,7 +38,7 @@ export function WhyChooseUsSection() {
           title={section?.title ?? "Why Choose MFresh"}
           subtitle={
             section?.subtitle ??
-            "Verified trade, secure payments, and quality at every step"
+            "Verified trade, responsive enquiry handling, and quality at every step"
           }
           align="center"
         />

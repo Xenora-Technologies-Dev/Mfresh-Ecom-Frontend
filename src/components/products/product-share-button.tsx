@@ -11,7 +11,7 @@ function buildProductShare(product: Product): { title: string; text: string; url
   const origin = product.country ? ` from ${product.country}` : "";
   return {
     title: `${product.name} | ${SITE_NAME}`,
-    text: `Checkout ${product.name}${origin} at ${SITE_NAME}`,
+    text: `See ${product.name}${origin} at ${SITE_NAME}`,
     url,
   };
 }

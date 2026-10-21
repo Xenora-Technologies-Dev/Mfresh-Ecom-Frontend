@@ -108,9 +108,9 @@ export default function SellerDashboardPage() {
         </div>
       </div>
 
-      <div id="orders">
+      <div id="enquiries">
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-dark-gray">My Orders</h3>
+          <h3 className="text-lg font-semibold text-dark-gray">My listing requests</h3>
           <Button size="sm" onClick={() => setModalOpen(true)}>
             <Plus className="h-4 w-4" />
             Sell

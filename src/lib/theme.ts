@@ -122,6 +122,15 @@ export function mixWithWhite(hex: string, amount: number) {
   return lighten(hex, amount);
 }
 
+
+const HEX_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+function isSafeHex(value: unknown): value is string {
+  return typeof value === "string" && HEX_RE.test(value.trim());
+}
+function safeColour(value: unknown, fallback: string): string {
+  return isSafeHex(value) ? value.trim() : fallback;
+}
+
 export function parseTheme(raw: unknown): StorefrontTheme {
   if (!raw || typeof raw !== "object") return { ...DEFAULT_THEME };
   const data = raw as Partial<StorefrontTheme>;
@@ -140,15 +149,29 @@ export function parseTheme(raw: unknown): StorefrontTheme {
       : DEFAULT_THEME.text;
   return {
     ...DEFAULT_THEME,
-    ...data,
     preset: (data.preset as ThemePresetId) ?? DEFAULT_THEME.preset,
     logoStyle: data.logoStyle === "text" ? "text" : "image",
     logoPath:
-      typeof data.logoPath === "string" && data.logoPath
-        ? data.logoPath
+      typeof data.logoPath === "string" &&
+      data.logoPath &&
+      !/[<>]|javascript:/i.test(data.logoPath)
+        ? data.logoPath.slice(0, 500)
         : DEFAULT_LOGO_PATH,
-    secondary,
-    text,
+    siteTagline:
+      typeof data.siteTagline === "string"
+        ? data.siteTagline.replace(/[<>]/g, "").slice(0, 200)
+        : DEFAULT_THEME.siteTagline,
+    primary: safeColour(data.primary, DEFAULT_THEME.primary),
+    secondary: safeColour(secondary, DEFAULT_THEME.secondary),
+    background: safeColour(data.background, DEFAULT_THEME.background),
+    surface: safeColour(data.surface, DEFAULT_THEME.surface),
+    text: safeColour(text, DEFAULT_THEME.text),
+    heroBackground: safeColour(data.heroBackground, DEFAULT_THEME.heroBackground),
+    freshMint: safeColour(data.freshMint, DEFAULT_THEME.freshMint),
+    borderRadius:
+      data.borderRadius === "sharp" || data.borderRadius === "rounded"
+        ? data.borderRadius
+        : "soft",
   };
 }
 

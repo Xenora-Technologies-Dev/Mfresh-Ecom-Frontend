@@ -5,7 +5,7 @@ export const banners: Banner[] = [
     id: "banner-1",
     title: "Global Wholesale Food Marketplace",
     subtitle:
-      "Connect with verified suppliers across 150+ countries. Secure escrow payments and quality-inspected trade.",
+      "Connect with verified suppliers across 150+ countries. Verified suppliers and quality-inspected trade — request a quote to get started.",
     ctaText: "Browse Products",
     ctaLink: "/products",
     image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600&q=80",

@@ -24,7 +24,7 @@ function DashboardSidebar({ role }: { role: PortalRole }) {
   const dashboardHref = getDashboardPath(role);
   const links = [
     { label: "Dashboard", href: dashboardHref, icon: LayoutDashboard },
-    { label: "My Orders", href: `${dashboardHref}#orders`, icon: ClipboardList },
+    { label: "My enquiries", href: `${dashboardHref}#enquiries`, icon: ClipboardList },
   ];
 
   return (
@@ -86,7 +86,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
           <div className="flex items-center gap-3">
             <span className="hidden text-sm font-medium capitalize text-muted sm:inline">
-              {role} dashboard
+              {role === "seller" ? "Seller" : "Buyer"} workspace
             </span>
             <UserButton />
             <button

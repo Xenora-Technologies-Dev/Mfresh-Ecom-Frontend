@@ -8,13 +8,12 @@ async function fetchExchangeRates(): Promise<{ aed?: number; sgd?: number }> {
   const base = process.env.NEXT_PUBLIC_API_URL;
   if (!base) return {};
   try {
-    const res = await fetch(`${base}/settings`);
+    const res = await fetch(`${base}/public/settings/rates`);
     if (!res.ok) return {};
-    const settings = (await res.json()) as { key: string; value: unknown }[];
-    const map = Object.fromEntries(settings.map((s) => [s.key, s.value]));
+    const data = (await res.json()) as { aed?: number | null; sgd?: number | null };
     return {
-      aed: map.exchange_rate_aed ? Number(map.exchange_rate_aed) : undefined,
-      sgd: map.exchange_rate_sgd ? Number(map.exchange_rate_sgd) : undefined,
+      aed: data.aed != null ? Number(data.aed) : undefined,
+      sgd: data.sgd != null ? Number(data.sgd) : undefined,
     };
   } catch {
     return {};

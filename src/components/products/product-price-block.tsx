@@ -46,7 +46,7 @@ export function ProductPriceBlock({
           </p>
         )}
       </div>
-      <p className="mt-2 text-sm text-muted">Prices are in {selected}</p>
+      <p className="mt-2 text-sm text-muted">Guide prices in {selected} — confirm on enquiry</p>
       <p className="mt-3 flex items-center gap-1.5 text-sm text-muted">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
         MOQ: {moq} {unit}

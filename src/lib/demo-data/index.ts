@@ -53,8 +53,8 @@ export const TRUST_FEATURES = [
     icon: "ShieldCheck",
   },
   {
-    title: "Certified Escrow",
-    description: "Secure payments until delivery confirmed",
+    title: "Dedicated Support",
+    description: "Every enquiry handled by our sourcing team",
     icon: "Lock",
   },
   {

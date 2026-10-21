@@ -4,10 +4,13 @@ export type OrderKind = "BUYER_ORDER" | "SELLER_LISTING";
 
 export type OrderStatus =
   | "PLACED"
+  | "NEW"
+  | "CONTACTED"
+  | "QUOTED"
+  | "CLOSED"
   | "UNDER_VERIFICATION"
   | "VERIFIED"
   | "REJECTED"
-  | "COMPLETED"
   | "CANCELLED";
 
 export interface OrderItem {
@@ -121,6 +124,16 @@ export function getOrder(id: string) {
 
 export function reviewOrder(id: string, data: ReviewOrderInput) {
   return api<Order>(`/orders/${id}/review`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export function updateEnquiryStatus(
+  id: string,
+  data: { status: "NEW" | "CONTACTED" | "QUOTED" | "CLOSED" | "CANCELLED"; adminNotes?: string },
+) {
+  return api<Order>(`/orders/${id}/status`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });

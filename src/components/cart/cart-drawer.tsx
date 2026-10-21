@@ -36,7 +36,7 @@ export function CartDrawer() {
       return;
     }
     if (!userId || !user) {
-      toast.error("Please sign in and complete your profile to place an order.");
+      toast.error("Please sign in and complete your profile to send an enquiry.");
       return;
     }
 
@@ -66,7 +66,7 @@ export function CartDrawer() {
       setSuccessOpen(true);
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Could not place order. Please try again.",
+        err instanceof Error ? err.message : "Could not send enquiry. Please try again.",
       );
     } finally {
       setSubmitting(false);
@@ -103,7 +103,7 @@ export function CartDrawer() {
                   className="flex items-center gap-2 text-lg font-bold text-dark-gray"
                 >
                   <ShoppingBag className="h-5 w-5 text-primary" />
-                  Your Cart
+                  Enquiry cart
                 </h2>
                 <button
                   type="button"
@@ -189,7 +189,7 @@ export function CartDrawer() {
               {items.length > 0 && (
                 <div className="border-t border-border px-5 py-4">
                   <div className="mb-3 flex items-center justify-between text-sm">
-                    <span className="font-medium text-muted">Estimated total</span>
+                    <span className="font-medium text-muted">Indicative total</span>
                     <span className="text-base font-bold text-dark-gray">
                       <PriceDisplay price={total} storedCurrency={items[0]?.currency ?? "USD"} />
                     </span>
@@ -204,7 +204,7 @@ export function CartDrawer() {
                       Cancel
                     </Button>
                     <Button className="flex-1" onClick={handleOrder} disabled={submitting}>
-                      {submitting ? "Placing order…" : "Order"}
+                      {submitting ? "Sending enquiry…" : "Send enquiry"}
                     </Button>
                   </div>
                 </div>
@@ -234,11 +234,14 @@ export function CartDrawer() {
               <CheckCircle2 className="h-8 w-8" />
             </div>
             <h2 id="order-success-title" className="text-lg font-bold text-dark-gray">
-              Your order is successful
+              Enquiry submitted
             </h2>
+            <p className="mt-2 text-sm text-muted">
+              Our team will review your request and contact you shortly. No payment is taken online.
+            </p>
             {lastOrderNumber && (
               <p className="mt-2 text-sm text-muted">
-                Order number:{" "}
+                Enquiry number:{" "}
                 <span className="font-semibold text-dark-gray">{lastOrderNumber}</span>
               </p>
             )}

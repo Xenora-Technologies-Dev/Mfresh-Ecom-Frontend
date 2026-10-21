@@ -52,7 +52,7 @@ export const faqs: FAQ[] = [
   },
   {
     id: "faq-8",
-    question: "How does escrow payment work?",
+    question: "How do enquiries work?",
     answer:
       "Funds are held securely until delivery and quality acceptance are confirmed by the buyer.",
     category: "Orders",

@@ -22,7 +22,7 @@ const KNOWLEDGE_BASE: KnowledgeEntry[] = [
   {
     keywords: ["what is", "about mfresh", "who are you", "tell me about", "mfresh"],
     answer:
-      "MFresh is a global B2B food marketplace connecting buyers with verified wholesale suppliers across 150+ countries. We cover seafood, meats, produce, dairy, pantry goods, and more — all with transparent pricing and secure escrow.",
+      "MFresh is a global B2B food marketplace connecting buyers with verified wholesale suppliers across 150+ countries. We cover seafood, meats, produce, dairy, pantry goods, and more — all with transparent guide pricing — send an enquiry to get a quote.",
   },
   {
     keywords: ["register", "sign up", "join", "create account", "become"],
@@ -32,7 +32,7 @@ const KNOWLEDGE_BASE: KnowledgeEntry[] = [
   {
     keywords: ["buyer", "purchase", "order", "buy"],
     answer:
-      "As a buyer, browse categories or search products, check MOQ (minimum order quantity) and supplier ratings, then place bulk orders. Payments go through secure escrow until delivery is confirmed.",
+      "As a buyer, browse categories or search products, check MOQ (minimum order quantity) and supplier ratings, then send an enquiry. Our team confirms availability and pricing with you directly. No payment is taken on the platform.",
   },
   {
     keywords: ["seller", "sell", "list product", "supplier portal"],
@@ -62,7 +62,7 @@ const KNOWLEDGE_BASE: KnowledgeEntry[] = [
   {
     keywords: ["pay", "payment", "escrow", "price", "cost", "currency", "usd", "aed"],
     answer:
-      "Pricing is transparent in USD with local currency conversion (AED, SGD). Payments are held in secure escrow until order delivery is confirmed — protecting both buyers and sellers.",
+      "Guide prices are shown in USD with local currency conversion (AED, SGD). Submit an enquiry to confirm final pricing — nothing is charged on the platform.",
   },
   {
     keywords: ["contact", "support", "help", "email", "phone", "reach"],
@@ -83,7 +83,7 @@ const KNOWLEDGE_BASE: KnowledgeEntry[] = [
 
 const FALLBACK_RESPONSES = [
   "Hmm, I'm not sure about that one! Try asking about registration, categories, wholesale orders, or supplier verification.",
-  "Good question! I can help with MFresh registration, product categories, MOQ, payments, and supplier info. What would you like to know?",
+  "Good question! I can help with MFresh registration, product categories, MOQ, enquiries, and supplier info. What would you like to know?",
   "I'm best at MFresh marketplace questions — try 'How do I register?' or 'What categories are available?'",
 ];
 

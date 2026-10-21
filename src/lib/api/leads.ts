@@ -108,3 +108,23 @@ export async function shareWishlist(payload: {
     }),
   });
 }
+
+export interface LeadRecord {
+  id: string;
+  type: string;
+  contactName: string;
+  email: string;
+  subject?: string | null;
+  status?: string | null;
+  isRead?: boolean;
+  createdAt: string;
+  message?: string | null;
+}
+
+export function listMyLeads(params: { limit?: number; type?: string } = {}) {
+  const sp = new URLSearchParams();
+  if (params.limit) sp.set("limit", String(params.limit));
+  if (params.type) sp.set("type", params.type);
+  const q = sp.toString() ? `?${sp}` : "";
+  return api<{ data: LeadRecord[]; meta: { total: number } }>(`/leads${q}`);
+}
